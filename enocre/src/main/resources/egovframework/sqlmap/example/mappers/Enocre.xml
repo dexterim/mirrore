@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.enocreWeb.service.impl.EnocreWebMapper">
+
+	<select id="selectEnocreWebServiceList" parameterType="String" resultType="egovMap">
+		SELECT ID, 
+			PW,
+			NAME,
+			PHONE,
+			WEATHER_LOC,
+			SUBWAY_LOC,
+			REG_DATE
+  		  FROM MEMBER
+  		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	<select id="selectEnocreWebServiceVO" resultType="memberVO">
+		SELECT ID, 
+			PW,
+			NAME,
+			PHONE,
+			WEATHER_LOC,
+			SUBWAY_LOC,
+			REG_DATE
+  		  FROM MEMBER
+	</select>
+	
+	<select id="selectEnocreLoginServiceList" parameterType="String" resultType="String">
+		SELECT PW
+  		  FROM MEMBER
+ 		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	<select id="selectSettingService" resultType="String">
+		SELECT MEMBER_ID
+  		  FROM SETTING
+  		  WHERE NOW_CONDITION = 1;
+	</select>
+	<select id="selectMirrorIdService" parameterType="String" resultType="int">
+		SELECT LIMIT_MEMBER
+  		  FROM MIRROR
+  		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND MIRROR_ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	<select id="selectIdOverlapCheckService" parameterType="String" resultType="String">
+		SELECT ID FROM MEMBER
+		<where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertRegisterServiceMap" parameterType="map">
+    INSERT INTO MEMBER (ID, PW, NAME, PHONE, WEATHER_LOC, SUBWAY_LOC) 
+    VALUES (#{id, jdbcType=VARCHAR}, 
+    		#{pw, jdbcType=VARCHAR}, 
+    		#{name, jdbcType=VARCHAR}, 
+    		#{phone, jdbcType=VARCHAR}, 
+    		#{weather_loc, jdbcType=VARCHAR}, 
+    		#{subway_loc, jdbcType=VARCHAR})
+    		<selectKey keyProperty="id" resultType="String" order="AFTER">
+
+			    SELECT ID FROM MEMBER
+			    WHERE ID = #{id};
+			
+			</selectKey>
+	</insert>
+	<insert id="insertRegisterSettingServiceMap" parameterType="map">
+    INSERT INTO SETTING (MIRROR_ID, MEMBER_ID, WEATHER, SUBWAY, MEMO, CALENDAR, NEWS, MIRROR_LIGHT, ROOM_LIGHT, FAN, DOOR_LOCK , NOW_CONDITION) 
+    VALUES (#{mirror_id, jdbcType=VARCHAR}, #{id, jdbcType=VARCHAR}, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+	</insert>
+	
+	<update id="updateOnSetting" parameterType="map">
+		UPDATE SETTING
+		SET ${setting_key} = 1
+		WHERE MEMBER_ID = #{setting_id};
+	</update>
+	<update id="updateOffSetting" parameterType="map">
+		UPDATE SETTING
+		SET ${setting_key} = 0
+		WHERE MEMBER_ID = #{setting_id};
+	</update>
+	
+
+</mapper>

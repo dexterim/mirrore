@@ -1,0 +1,55 @@
+div.absolute_main{
+    position: absolute;
+     top:36%;
+     left:50%;
+     transform: translate(-50%, -50%);                                                                   
+     color: white;
+     z-index: 2;
+     font-size:16px;
+     text-align: center;
+}
+div.absolute_pre{
+	position: absolute;
+    top:36%;
+    left:15%;
+    transform: translate(-50%, -50%);                                                                   
+    color: black;
+    z-index: 2;
+    text-align: center;
+    font-size:14px;
+    color : white;
+}
+div.absolute_next{
+    position: absolute;
+    top:36%;
+    left:82.5%;
+    transform: translate(-50%, -50%);                                                                   
+    color: black;
+    z-index: 2;
+    text-align: center;
+    font-size:14px;
+    color : white;
+}
+
+div.absolute_ascending{
+    position: absolute;
+    top:73%;
+    left:20%;
+    transform: translate(-50%, -50%);                                                                   
+    color: black;
+    z-index: 2;
+    text-align: center;
+    font-size:14px;
+    color : white;
+}
+div.absolute_descending{
+    position: absolute;
+    top:73%;
+    left:70%;
+    transform: translate(-50%, -50%);                                                                   
+    color: black;
+    z-index: 2;
+    text-align: center;
+    font-size:14px;
+    color : white;
+}

@@ -1,0 +1,276 @@
+package egovframework.example.memberWeb.web;
+
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.socket.WebSocketSession;
+
+import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketExtension;
+import com.neovisionaries.ws.client.WebSocketFactory;
+
+import egovframework.example.cmmn.JsonUtil;
+import egovframework.example.memberWeb.service.MemberWebService;
+import egovframework.example.webSocket.web.MyHandler;
+import egovframework.example.webSocket.web.WebSocket;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
+
+import org.hsqldb.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Controller
+public class MemberWebController {
+	
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final WebSocketSession session = null;
+	private WebSocket websocket = new WebSocket();
+	
+	@Resource(name="memberWebService")
+	private MemberWebService memberWebService;
+	
+	@RequestMapping("register.do")
+	public void userRegister(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception{
+		String resultStr;
+		Map<String,Object> hashMap;
+		hashMap = JsonUtil.JsonToMap(reqParam);
+		
+		System.out.println(hashMap+"\n:map으로 변환_회원정보!");
+		
+		String insertSuccessId = memberWebService.insertRegisterServiceMap(hashMap);
+		System.out.println("insert 후 pk : " + insertSuccessId);
+		
+		memberWebService.insertRegisterSettingServiceMap(hashMap);
+		
+		if(insertSuccessId == null) {
+			resultStr = "error";
+		}else {
+			if(insertSuccessId.equals(hashMap.get("id"))){
+				resultStr = "success";
+			} else {
+				resultStr = "please reenter your information";
+			}
+		}
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		
+		//print.write(resultStr);
+		print.print(resultStr);
+		print.flush();
+		//return "redirect:/enocreWeb.do";
+	}
+	@RequestMapping("id_overlap_check.do")
+	public void idOverlapCheck(HttpServletRequest request,
+			HttpServletResponse response) throws Exception{
+		String id, checkId, resultStr = null;
+		id = request.getParameter("id");
+		System.out.println("overlap_id_request : "+id);
+		checkId = memberWebService.selectIdOverlapCheckService(id);
+		if(id.equals(checkId)) {
+			resultStr = "exists";
+		}
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		print.write(resultStr);
+		print.flush();
+	}
+	
+	@RequestMapping("mirror_id_check.do")
+	public void mirrorIdCheck(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception{
+		String mirror_id, resultStr = null;
+		Map<String,Object> hashMap;
+		hashMap = JsonUtil.JsonToMap(reqParam);
+		
+		mirror_id = (String)hashMap.get("mirror_id");
+		System.out.println("미러 아이디 존재 여부 확인: "+mirror_id);
+		
+		int limit_member = memberWebService.selectMirrorIdService(mirror_id);
+		System.out.println("limit_member : " + limit_member);
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("limit_member", limit_member);
+		
+		if(limit_member == 0) {
+			resultStr = "didn't assigned MIRROR_ID";
+		}else {	
+			resultStr = "success";
+		}
+		resultMap.put("resultStr", resultStr);
+		
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+			
+		String resultMapToJson = JsonUtil.HashMapToJson(resultMap);
+		
+		print.write(resultMapToJson);
+		print.print(resultMapToJson);
+		print.flush();
+				
+		//return "redirect:/enocreWeb.do";
+	}
+	
+	@RequestMapping("login.do")
+	public void userLoginCheck(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response,
+			ModelMap model) throws Exception{
+		String id, pw;
+		Map<String,Object> hashMap;
+		hashMap = JsonUtil.JsonToMap(reqParam);
+		
+		System.out.println(hashMap.get("id")+":id_object타입의 형변환 필요!");
+		System.out.println(hashMap.get("pw")+":pw_object타입의 형변환 필요!");
+		
+		id = (String)hashMap.get("id");
+		pw = (String)hashMap.get("pw");
+		
+		String checkPw = memberWebService.selectMemberLoginServiceList(id);
+		System.out.println("해당 id: "+ id +" 의 비밀번호 확인: "+ checkPw);
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		if(checkPw == null) {
+			resultMap.put("result", "id_missing");
+			resultMap.put("memberList", null);
+		}else {
+			if(!checkPw.equals(pw)) {
+				resultMap.put("result", "pw_missing");
+				resultMap.put("memberList", null);
+			} else {
+				List<EgovMap> memberList = memberWebService.selectMemberWebServiceList(id);
+				for (int i = 0; i<memberList.size();i++) {
+					System.out.println("member:"+memberList.get(i));
+				}
+				resultMap.put("result", "success");
+				resultMap.put("memberList", memberList);
+				String userName = memberList.get(0).get("name").toString();
+				System.out.println("member_name : "+userName);
+				try{		
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					ws.sendText(userName+" login");
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				} finally {
+					log.info("login.do");
+				}
+			}
+			response.setCharacterEncoding("utf-8");
+			
+			PrintWriter print = response.getWriter();
+				
+			String resultMapToJson = JsonUtil.HashMapToJson(resultMap);
+			
+			print.write(resultMapToJson);
+			print.print(resultMapToJson);
+			print.flush();
+			
+			System.out.println("resultMapToJson: "+resultMapToJson);
+		}
+	}
+	
+	@RequestMapping(value = "setting.do")
+	public void selectMemberSetting(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		String param = "";
+		Map<String, Object> paramMap = JsonUtil.JsonToMap(reqParam);
+		
+		param = (String)paramMap.get("id_session_value");
+		
+		List<EgovMap> memberSettingList = memberWebService.selectSettingServiceList(param);
+		
+		for (int i = 0; i<memberSettingList.size();i++) {
+			System.out.println("memberSetting:"+memberSettingList.get(i));
+		}
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		
+		resultMap.put("result", "success");
+		resultMap.put("memberSettingList", memberSettingList);
+		
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter out = response.getWriter();
+		
+		String resultMapToJson = JsonUtil.HashMapToJson(resultMap);
+		
+		out.write(resultMapToJson);
+	}
+	@RequestMapping("update_member.do")
+	public void updateMember(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			ModelMap model) throws Exception{
+		try{
+			String member_key, member_value_en, member_value, member_id, resultStr = null;
+			member_key = request.getParameter("member_key");
+			member_value_en = request.getParameter("member_value_en");
+			member_value = request.getParameter("member_value");
+			member_id = request.getParameter("member_id");
+			
+			System.out.println("update_column : "+member_key);
+			System.out.println("update_value_en : "+member_value_en);
+			System.out.println("update_value : "+member_value);
+			System.out.println("update_id : "+member_id);
+			
+			HashMap<String,Object> hashMap = new HashMap<String,Object>();
+			hashMap.put("member_key", member_key);
+			hashMap.put("member_value", member_value);
+			hashMap.put("member_id", member_id);
+			
+			memberWebService.updateMember(hashMap);
+			model.addAttribute("weather_loc", member_value_en);
+			resultStr = "success";
+			
+			response.setCharacterEncoding("utf-8");
+			
+			PrintWriter print = response.getWriter();
+			print.print(resultStr);
+			print.flush();
+			
+			response.sendRedirect("http://localhost:8081/enocre/newsWeb.do");
+		} catch (ArrayIndexOutOfBoundsException ae) {
+			log.info("array 오류가 발생했습니다."+ae);
+		} catch (NullPointerException ne) {
+			log.info("null 오류가 발생했습니다."+ne);
+		} catch (Exception e) {
+			log.info("그 외 오류가 발생했습니다."+e);
+		} finally {
+			log.debug("WelcomeWebController입니다.");
+		}
+		
+	}
+	
+	public static com.neovisionaries.ws.client.WebSocket connect() throws Exception
+    {
+        return new WebSocketFactory()
+            .setConnectionTimeout(5000)
+            .createSocket("ws://172.18.92.153:8081/enocre/websocket/echo.do")
+            .addListener(new WebSocketAdapter() {
+                // A text message arrived from the server.
+                public void onTextMessage(WebSocket websocket, String message) {
+                    System.out.println(message);
+                }
+            })
+            .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
+            .connect();
+    }
+	
+}

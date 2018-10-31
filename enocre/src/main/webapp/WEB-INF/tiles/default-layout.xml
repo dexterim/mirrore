@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+ 
+<tiles-definitions>
+	<definition name="layouts-tiles" 		template="/WEB-INF/jsp/egovframework/example/cmmn/default-layouts.jsp">
+	  	<put-attribute name="header"    	value="/WEB-INF/jsp/egovframework/example/cmmn/default-header-ui.jsp" />
+		<put-attribute name="watch"    		value="/WEB-INF/jsp/egovframework/example/ui/watch.jsp" />
+		<put-attribute name="calendar"    	value="/WEB-INF/jsp/egovframework/example/ui/calendar.jsp" />
+		<put-attribute name="schedule"    	value="/WEB-INF/jsp/egovframework/example/ui/schedule.jsp" />
+		<put-attribute name="memo"    		value="/WEB-INF/jsp/egovframework/example/ui/memo.jsp" />
+		<put-attribute name="news"    		value="/WEB-INF/jsp/egovframework/example/ui/news.jsp" />
+		<put-attribute name="content"    	value="/WEB-INF/jsp/egovframework/example/ui/content.jsp" />
+		<put-attribute name="subway"    	value="/WEB-INF/jsp/egovframework/example/ui/subway.jsp" />
+		<put-attribute name="search"    	value="/WEB-INF/jsp/egovframework/example/ui/search.jsp" />
+		<put-attribute name="etc"    		value="/WEB-INF/jsp/egovframework/example/ui/etc.jsp" />
+		<put-attribute name="footer"		value="/WEB-INF/jsp/egovframework/example/cmmn/default-footer.jsp"/>
+		<put-attribute name="script"		value="/WEB-INF/jsp/egovframework/example/cmmn/default-script-ui" />	
+	</definition>
+	
+	<definition name="*.tiles" extends="layouts-tiles">
+	  	<put-attribute name="header"    	value="/WEB-INF/jsp/egovframework/example/cmmn/default-header-{1}.jsp" />
+		<put-attribute name="script"		value="/WEB-INF/jsp/egovframework/example/cmmn/default-script-{1}.jsp"/>
+	</definition>	
+	
+</tiles-definitions>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.memberWeb.service.impl.MemberWebMapper">
+
+	<insert id="insertRegisterServiceMap" parameterType="map">
+    INSERT INTO MEMBER (ID, PW, NAME, PHONE, WEATHER_LOC, SUBWAY_LOC) 
+    VALUES (#{id, jdbcType=VARCHAR}, 
+    		#{pw, jdbcType=VARCHAR}, 
+    		#{name, jdbcType=VARCHAR}, 
+    		#{phone, jdbcType=VARCHAR}, 
+    		#{weather_loc, jdbcType=VARCHAR}, 
+    		#{subway_loc, jdbcType=VARCHAR})
+    		<selectKey keyProperty="id" resultType="String" order="AFTER">
+
+			    SELECT ID FROM MEMBER
+			    WHERE ID = #{id};
+			
+			</selectKey>
+	</insert>
+	
+	<insert id="insertRegisterSettingServiceMap" parameterType="map">
+    INSERT INTO SETTING (MIRROR_ID, MEMBER_ID, WEATHER, SUBWAY, MEMO, CALENDAR, NEWS, MIRROR_LIGHT, ROOM_LIGHT, FAN, DOOR_LOCK , NOW_CONDITION) 
+    VALUES (#{mirror_id, jdbcType=VARCHAR}, #{id, jdbcType=VARCHAR}, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+	</insert>
+	
+	
+	<select id="selectIdOverlapCheckService" parameterType="String" resultType="String">
+		SELECT ID FROM MEMBER
+		<where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectMirrorIdService" parameterType="String" resultType="int">
+		SELECT LIMIT_MEMBER
+  		  FROM MIRROR
+  		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND MIRROR_ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="selectMemberWebServiceList" parameterType="String" resultType="egovMap">
+		SELECT 
+			M.ID, 
+			M.PW,
+			M.NAME,
+			M.PHONE,
+			M.WEATHER_LOC,
+			M.SUBWAY_LOC,
+			M.REG_DATE,
+			S.MIRROR_ID, 
+			S.WEATHER, 
+			S.SUBWAY, 
+			S.MEMO, 
+			S.CALENDAR,
+			S.NEWS,
+			S.MIRROR_LIGHT, 
+			S.ROOM_LIGHT, 
+			S.FAN, 
+			S.DOOR_LOCK, 
+			S.NOW_CONDITION
+		FROM MEMBER M, SETTING S
+  		  <where>
+  		  M.ID = S.MEMBER_ID
+			<if test='_parameter != null and _parameter != ""'>
+				AND M.ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectSettingServiceList" parameterType="String" resultType="egovMap">
+		SELECT 
+			MIRROR_ID, 
+			MEMBER_ID,
+			WEATHER, 
+			SUBWAY, 
+			MEMO, 
+			CALENDAR,
+			NEWS,
+			MIRROR_LIGHT, 
+			ROOM_LIGHT, 
+			FAN, 
+			DOOR_LOCK, 
+			NOW_CONDITION
+		FROM SETTING
+  		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND MEMBER_ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectMemberLoginServiceList" parameterType="String" resultType="String">
+		SELECT PW
+  		  FROM MEMBER
+ 		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND ID = #{_parameter}	
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateMember" parameterType="map">
+		UPDATE MEMBER
+		SET ${member_key} = #{member_value}
+		WHERE ID = #{member_id};
+	</update>
+</mapper>
