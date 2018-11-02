@@ -5,7 +5,7 @@
 	<head>
   		<tiles:insertAttribute name="header"/>
   	</head>
-  	<body>
+  	<body style="background-color:#000">
   		<div class="wrapper">
   			<div class="main-panel ps ps--active-y">
 	  			

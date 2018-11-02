@@ -1,4 +1,4 @@
-package egovframework.example.memo.service;
+package egovframework.example.memberWeb.service;
 
 import java.sql.Timestamp;
 
@@ -23,11 +23,10 @@ public class SessionVO {
 	private int s_fan;
 	private int s_door_lock;
 	private int s_now_condition;
+	//member
 	public static String getS_id() {
 		return s_id;
 	}
-	
-	//member
 	public static void setS_id(String s_id) {
 		SessionVO.s_id = s_id;
 	}

@@ -7,7 +7,7 @@
 <button id="signout_button" style="display: none;">Sign Out</button>
 
 <div class="col-md-4" style="position:absolute">
-	<div class="tilesCalendar card card-tasks" style="background:#27293d;max-height:300px; display:none;">
+	<div class="tilesCalendar card card-tasks" style="max-height:300px; display:none;">
 	   <div class="card-header ">
 	     <h6 class="title d-inline">Calendar</h6>
 	     <p class="card-category d-inline">today</p>

@@ -11,7 +11,7 @@
 						  <div class="card" data-color="#000">
 						    <div class="card-header">
 						      	<h3 class="card-title" style="margin-bottom:0px;">
-						      		<span id="clocktext" style="font-kerning:none; color:white; margin:50px; margin-left:0px; margin-bottom:0px;"></span>
+						      		<span id="clocktext" style="font-kerning:none; color:white; margin:50px; margin-left:0px; margin-bottom:0px;font-size:50px"></span>
 						      		<i class="tilesWatch wi" id="myWeatherNowIcon" style="font-size: 50px; display:none;"></i>
 								</h3>
 						      	<h5 class="card-category">
@@ -27,7 +27,7 @@
 							<script type="text/javascript">
 								var textElem = document.getElementById("clocktext");
 								var targetWidth = 0.3;  // Proportion of full screen width
-								var curFontSize = 20;  // Do not change
+								var curFontSize = 50;  // Do not change
 								
 								function updateClock() {
 									var d = new Date();
@@ -43,7 +43,6 @@
 								function updateTextSize() {
 									for (var i = 0; 3 > i; i++) {  // Iterate for better better convergence
 										curFontSize *= targetWidth / (textElem.offsetWidth / textElem.parentNode.offsetWidth);
-										textElem.style.fontSize = curFontSize + "pt";
 									}
 								}
 								
@@ -56,6 +55,7 @@
 							<!-- 따로 뺄 것 : weather.js -->
 							
 							<script type="text/javascript">
+								
 								var weather_loc = "seoul";
 								console.log(weather_loc);
 								var apiURI = "http://api.openweathermap.org/data/2.5/weather?q="+weather_loc+"&appid="+"6c360890e6d16d5945e3ae0ec8784697";
@@ -74,7 +74,7 @@
 								                $("#myWeatherNowTemp").html((resp.main.temp- 273.15).toFixed(1)+" °C");
 								                $("#myWeatherNowHum").html(resp.main.humidity+" %");
 								                $("#myWeatherMain").html(resp.main.humidity+" %");
-								                console.log("현재온도 : "+ (resp.main.temp- 273.15) );
+								                /* console.log("현재온도 : "+ (resp.main.temp- 273.15) );
 								                console.log("현재습도 : "+ resp.main.humidity);
 								                console.log("날씨 : "+ resp.weather[0].main );
 								                console.log("상세날씨설명 : "+ resp.weather[0].description );
@@ -82,7 +82,7 @@
 								                console.log("바람   : "+ resp.wind.speed );
 								                console.log("나라   : "+ resp.sys.country );
 								                console.log("도시이름  : "+ resp.name );
-								                console.log("구름  : "+ (resp.clouds.all) +"%" );
+								                console.log("구름  : "+ (resp.clouds.all) +"%" ); */
 								                
 								                myWeather = resp.weather[0].main.toLowerCase();
 								                console.log("myWeather1:"+myWeather);

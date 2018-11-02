@@ -20,7 +20,7 @@
 	
 	<insert id="insertRegisterSettingServiceMap" parameterType="map">
     INSERT INTO SETTING (MIRROR_ID, MEMBER_ID, WEATHER, SUBWAY, MEMO, CALENDAR, NEWS, MIRROR_LIGHT, ROOM_LIGHT, FAN, DOOR_LOCK , NOW_CONDITION) 
-    VALUES (#{mirror_id, jdbcType=VARCHAR}, #{id, jdbcType=VARCHAR}, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    VALUES (#{mirror_id, jdbcType=VARCHAR}, #{id, jdbcType=VARCHAR}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 	</insert>
 	
 	

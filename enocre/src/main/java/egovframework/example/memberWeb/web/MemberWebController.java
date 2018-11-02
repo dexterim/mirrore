@@ -21,6 +21,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memberWeb.service.MemberWebService;
+import egovframework.example.memberWeb.service.SessionVO;
 import egovframework.example.webSocket.web.MyHandler;
 import egovframework.example.webSocket.web.WebSocket;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
@@ -33,8 +34,6 @@ import org.slf4j.LoggerFactory;
 public class MemberWebController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private final WebSocketSession session = null;
-	private WebSocket websocket = new WebSocket();
 	
 	@Resource(name="memberWebService")
 	private MemberWebService memberWebService;
@@ -157,11 +156,12 @@ public class MemberWebController {
 				}
 				resultMap.put("result", "success");
 				resultMap.put("memberList", memberList);
+				String userId = memberList.get(0).get("id").toString();
 				String userName = memberList.get(0).get("name").toString();
-				System.out.println("member_name : "+userName);
+				System.out.println("member_Id : "+userId);
 				try{		
 					com.neovisionaries.ws.client.WebSocket ws = connect();
-					ws.sendText(userName+" login");
+					ws.sendText(userId+" login");
 				} catch (ArrayIndexOutOfBoundsException ae) {
 					log.info("array 오류가 발생했습니다."+ae);
 				} catch (NullPointerException ne) {
@@ -183,6 +183,66 @@ public class MemberWebController {
 			print.flush();
 			
 			System.out.println("resultMapToJson: "+resultMapToJson);
+		}
+	}
+	@RequestMapping(value = "get_member_info.do")
+	public void selectMemberInfo(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		String param = "";
+		Map<String, Object> paramMap = JsonUtil.JsonToMap(reqParam);
+		
+		param = (String)paramMap.get("id_session_value");
+		
+		List<EgovMap> memberInfoList = memberWebService.selectMemberWebServiceList(param);
+		
+		for (int i = 0; i<memberInfoList.size();i++) {
+			System.out.println("memberInfoList:"+memberInfoList.get(i));
+		}
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		
+		resultMap.put("result", "success");
+		resultMap.put("memberInfoList", memberInfoList);
+		
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter out = response.getWriter();
+		
+		String resultMapToJson = JsonUtil.HashMapToJson(resultMap);
+		
+		out.write(resultMapToJson);
+	}
+	@RequestMapping("logout.do")
+	public void userLogout(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response,
+			ModelMap model) throws Exception{
+		String key_skill, resultStr = "";
+		Map<String,Object> hashMap;
+		hashMap = JsonUtil.JsonToMap(reqParam);
+		
+		key_skill = (String)hashMap.get("key_skill");
+		System.out.println("로그아웃: "+key_skill);
+		try{		
+			com.neovisionaries.ws.client.WebSocket ws = connect();
+			ws.sendText("logout");
+			resultStr = "success";
+		} catch (ArrayIndexOutOfBoundsException ae) {
+			log.info("array 오류가 발생했습니다."+ae);
+		} catch (NullPointerException ne) {
+			log.info("null 오류가 발생했습니다."+ne);
+		} catch (Exception e) {
+			log.info("그 외 오류가 발생했습니다."+e);
+		} finally {
+			
+			response.setCharacterEncoding("utf-8");
+			
+			PrintWriter print = response.getWriter();
+			
+			print.print(resultStr);
+			print.flush();
+			
+			log.info("logout.do");
 		}
 	}
 	
@@ -236,8 +296,26 @@ public class MemberWebController {
 			hashMap.put("member_id", member_id);
 			
 			memberWebService.updateMember(hashMap);
-			model.addAttribute("weather_loc", member_value_en);
-			resultStr = "success";
+			
+			try{	
+				com.neovisionaries.ws.client.WebSocket ws = connect();
+				if(member_key.equals("weather_loc")) {
+					System.out.println("weather 변경");
+					ws.sendText(member_id+" update_member_weather_loc");
+					
+				}else if(member_key.equals("subway_loc")) {
+					System.out.println("subway_loc 변경");
+					ws.sendText(member_id+" update_member_subway_loc");
+				}
+				
+				resultStr = "success";
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				log.info("array 오류가 발생했습니다."+ae);
+			} catch (NullPointerException ne) {
+				log.info("null 오류가 발생했습니다."+ne);
+			} catch (Exception e) {
+				log.info("그 외 오류가 발생했습니다."+e);
+			}
 			
 			response.setCharacterEncoding("utf-8");
 			
@@ -245,7 +323,6 @@ public class MemberWebController {
 			print.print(resultStr);
 			print.flush();
 			
-			response.sendRedirect("http://localhost:8081/enocre/newsWeb.do");
 		} catch (ArrayIndexOutOfBoundsException ae) {
 			log.info("array 오류가 발생했습니다."+ae);
 		} catch (NullPointerException ne) {
@@ -253,7 +330,7 @@ public class MemberWebController {
 		} catch (Exception e) {
 			log.info("그 외 오류가 발생했습니다."+e);
 		} finally {
-			log.debug("WelcomeWebController입니다.");
+			log.debug("MemberWebController입니다.");
 		}
 		
 	}
@@ -272,5 +349,13 @@ public class MemberWebController {
             .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
             .connect();
     }
+	/*@RequestMapping("sessionMatch.do")
+	public void sessionMatch(List<EgovMap> memberList) throws Exception {
+		
+		SessionVO.setS_weather_location(memberList.get(0).get("weather_loc").toString());
+		SessionVO.setS_subway_location(memberList.get(0).get("subway_loc").toString());
+		SessionVO.setS_id(memberList.get(0).get("id").toString());
+		SessionVO.setS_name(memberList.get(0).get("name").toString());
+	}*/
 	
 }

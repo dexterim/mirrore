@@ -12,15 +12,14 @@
 						            <i class="tim-icons icon-simple-remove"></i>
 						          </button>
 						          <span>
-						            <b> Hello - </b> Android provides available supports for the library to work with JSON, 
-						            you don't need to declare any other libraries. </span>
+						            <b> 졸업 작품 밤샘 준비물  | </b> 담요, 칫솔, 클렌징폼, 노트북, 충전기, 바나나  </span>
 						        </div>
 						        <div class="alert alert-info" style="background:#27293d;">
 						          <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
 						            <i class="tim-icons icon-simple-remove"></i>
 						          </button>
 						          <span>
-						            <b> ♥ - </b> Can you join us?</span>
+						            <b> 제주도 항공권 예약  | </b> 펜션도 같이 알아보기</span>
 						        </div>
 						    </div>
 						  </div>

@@ -40,7 +40,8 @@
 		send_message();
 	});
 	var tilesWatchOnOffStr = "<c:out value="${param.tilesWatch}"/>";
-    var id_session = {"id_session_value" : "miri@gmail.com"};
+	var userId = "";
+    var id_session = {"id_session_value" : userId};
 	var count = $('#rank li').length;
     var height = $('#rank li').height();
     
@@ -91,23 +92,134 @@
         //output.appendChild(pre);
         if(message == "java_client") {
         	setting.enableSetting();
-        } else {
+        } else if(message == "logout") {
+        	console.log("logout");
+        	logout.enableLogoutSetting();
+        } else if(message.indexOf("login") != -1) {
         	var message_login = message.slice(message.length-5, message.length);
             var message_id = message.slice(0, message.length-6);
             
             if(message_login == "login") {
-            	console.log(message_id);
-            	welcomeUser.sayHello(message_id);
-            	
-            	setTimeout(function() { 
-            		setting.enableSetting();
-            		}, 2000);
+            	console.log("login된 아이디: "+message_id);
+            	userId = message_id;
+            	memberInfo.getMemberInfo("login", userId);
             }
+        } else if(message.indexOf("update_member") != -1) {
+        	console.log("member data 변경");
+            
+        	if(message.indexOf("update_member_weather_loc") != -1) {
+        		console.log("update_member_weather_loc 변경");
+        		var message_id = message.slice(0, message.length-26);
+        		userId = message_id;
+            	memberInfo.getMemberInfo("update_member_weather_loc", userId);
+            	
+        	}else if(message.indexOf("update_member_subway_loc") != -1) {
+        		console.log("update_member_subway_loc 변경");
+        		var message_id = message.slice(0, message.length-25);
+        		userId = message_id;
+            	memberInfo.getMemberInfo("update_member_subway_loc", userId);
+        	}
         }
     }
 
     window.addEventListener("load", init, false);
     
+    //memberInfo select
+    var memberInfo = {
+    		getMemberInfo : function(updateType, userId) {
+    			console.log("위젯에 띄울 멤버 데이터 요청");
+    			id_session = {"id_session_value" : userId};
+    			$.ajax({
+    				type		: "post",
+    				url			: "get_member_info.do",
+    				data		: JSON.stringify(id_session),
+    				contentType	: "application/json",
+    				success		: function(data){
+    					var jobj_parse = JSON.parse(data);
+    					if(jobj_parse.result === "success") {
+    						var json_member = jobj_parse.memberInfoList;
+    						$.each(json_member, function(i, item) {
+    							var message_name = item.name;
+    							
+    							var message_weather_loc = item.weatherLoc;
+    							if(message_weather_loc == "서울시") {
+    								message_weather_loc = "seoul";
+    								
+    							}else if(message_weather_loc == "경기도"){
+    								message_weather_loc = "Gyeonggi-do";
+    								
+    							}else if(message_weather_loc == "강원도"){
+    								message_weather_loc = "chuncheon";
+    								
+    							}else if(message_weather_loc == "충청도"){
+    								message_weather_loc = "daejeon";
+    								
+    							}else if(message_weather_loc == "전라도"){
+    								message_weather_loc = "Jeonju";
+    								
+    							}else if(message_weather_loc == "경상도"){
+    								message_weather_loc = "busan";
+    								
+    							}
+    							var message_subway_loc = item.subwayLoc;
+    							console.log("subway_loc: "+message_subway_loc);	
+    							
+    							if(updateType == "login") {
+    								welcomeUser.sayHello(message_name);
+        			            	setTimeout(function() { 
+        			            		setting.enableSetting();
+        			            		}, 2000);
+        			           
+    							} else if(updateType == "update_member_weather_loc") {
+    								
+    								get_weather_api.myWeather(message_weather_loc);
+    								setting.enableSetting();
+    								
+    							} else if((updateType == "update_member_subway_loc")) {
+    								
+    								console.log("subway_loc: "+message_subway_loc);	
+    							}
+    							
+   						});
+   					}
+   				}});
+    		}
+    }
+    //weather_data_update
+    var get_weather_api = {
+			myWeather : function(my_weather_loc) {
+				var myWeather = "";
+				var apiURI = "http://api.openweathermap.org/data/2.5/weather?q="+my_weather_loc+"&appid="+"6c360890e6d16d5945e3ae0ec8784697";
+			
+		        $.ajax({
+		            url: apiURI,
+		            dataType: "json",
+		            type: "GET",
+		            async: "false",
+		            success: function(resp) {
+		            	// $("#myW").html(imgURL);
+						
+		            	console.log(resp);
+		                $("#myWeatherNowTemp").html((resp.main.temp- 273.15).toFixed(1)+" °C");
+		                $("#myWeatherNowHum").html(resp.main.humidity+" %");
+		                $("#myWeatherMain").html(resp.main.humidity+" %");
+		                /* console.log("현재온도 : "+ (resp.main.temp- 273.15) );
+		                console.log("현재습도 : "+ resp.main.humidity);
+		                console.log("날씨 : "+ resp.weather[0].main );
+		                console.log("상세날씨설명 : "+ resp.weather[0].description );
+		                console.log("날씨 이미지 : "+ resp.weather[0].icon );
+		                console.log("바람   : "+ resp.wind.speed );
+		                console.log("나라   : "+ resp.sys.country );
+		                console.log("도시이름  : "+ resp.name );
+		                console.log("구름  : "+ (resp.clouds.all) +"%" ); */
+		                
+		                myWeather = resp.weather[0].main.toLowerCase();
+		                console.log("myWeather1:"+myWeather);
+		                getWeatherIcon(myWeather);
+		            }
+		        })
+			}
+	}
     var setting = {
     		enableSetting : function() {
     			console.log("ajax 통신");
@@ -131,6 +243,15 @@
    				}});
     		}
     }
+    var logout = {
+    		enableLogoutSetting : function() {
+    			tilesWatch.tilesWatchDisplay(0);
+				tilesNews.tilesNewsDisplay(0);
+				tilesSubway.tilesSubwayDisplay(0);
+				tilesCalendar.tilesCalendarDisplay(0);
+				tilesMemo.tilesMemoDisplay(0);
+    		}
+    }
     
     //news scrolling method
 	var step = {
@@ -142,18 +263,25 @@
 		        });
 			}
 	}
+    
     //welcome_user
     var welcomeUser = {
     		sayHello : function(user_id) {
+    			console.log("name: "+user_id);
     			var welcomeUserText = "Hello, "+user_id;
     			var welcomeTextAnimation = $('#animationSandbox');
 				$('#welcomeUser').text(welcomeUserText);
+				
 				welcomeTextAnimation.addClass('animated zoomIn');
+				welcomeTextAnimation.css('display','block');
+				
 			    setTimeout(function () {
 			    	welcomeTextAnimation.fadeOut();
 			    }, 2000 );
+			    welcomeTextAnimation.removeClass('animated zoomIn');
     		}
     }
+    
     //enable controller method
 	var tilesWatch = {
 		tilesWatchDisplay : function(opt) {
