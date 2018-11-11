@@ -46,7 +46,7 @@
     var height = $('#rank li').height();
     
     //websocket
-    var wsUri = "ws://172.18.92.153:8081/enocre/websocket/echo.do";
+    var wsUri = "ws://172.18.71.3:8081/enocre/websocket/echo.do";
     var output;
     function init() {
     	console.log("socket_init");

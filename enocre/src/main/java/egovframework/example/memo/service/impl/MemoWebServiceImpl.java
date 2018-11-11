@@ -17,20 +17,19 @@ public class MemoWebServiceImpl implements MemoWebService {
 	private MemoWebMapper memoWebMapper;
 	
 	@Override
-	public void insertMemoServiceMap(Map<String, Object> hashMap) throws Exception {
+	public void insertMemoService(Map<String, Object> hashMap) throws Exception {
 		// TODO Auto-generated method stub
-		memoWebMapper.insertMemoServiceMap(hashMap);
-	}
-	@Override
-	public List<EgovMap> selectAllMemoService(Map<String, Object> hashMap) throws Exception {
-		// TODO Auto-generated method stub
-		return memoWebMapper.selectAllMemoService(hashMap);
+		memoWebMapper.insertMemoService(hashMap);
 	}
 	@Override
 	public void updateMemoService(Map<String, Object> hashMap) throws Exception {
 		// TODO Auto-generated method stub
 		memoWebMapper.updateMemoService(hashMap);
 	}
-	
+	@Override
+	public void deleteMemoService(Map<String, Object> hashMap) throws Exception {
+		// TODO Auto-generated method stub
+		memoWebMapper.deleteMemoService(hashMap);
+	}
 	
 }

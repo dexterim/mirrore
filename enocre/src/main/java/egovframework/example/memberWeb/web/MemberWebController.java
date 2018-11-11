@@ -339,7 +339,7 @@ public class MemberWebController {
     {
         return new WebSocketFactory()
             .setConnectionTimeout(5000)
-            .createSocket("ws://172.18.92.153:8081/enocre/websocket/echo.do")
+            .createSocket("ws://172.18.71.3:8081/enocre/websocket/echo.do")
             .addListener(new WebSocketAdapter() {
                 // A text message arrived from the server.
                 public void onTextMessage(WebSocket websocket, String message) {
