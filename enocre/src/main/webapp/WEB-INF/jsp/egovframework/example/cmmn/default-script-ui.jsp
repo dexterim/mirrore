@@ -34,6 +34,8 @@
 	$(function() {
 		//console.log("tilesWatchOnOffStr:"+ tilesWatchOnOffStr +"pathStr : "+pathStr);
 		/* tilesWatch.tilesWatchDisplay(tilesWatchOnOffStr); */
+		var query = new URLSearchParams(location.search);
+		console.log("queryString :" + query.get('key'));
 		step.scrolling(1);
 		
 		//connect websocket
@@ -46,7 +48,7 @@
     var height = $('#rank li').height();
     
     //websocket
-    var wsUri = "ws://172.18.71.3:8081/enocre/websocket/echo.do";
+    var wsUri = "ws://172.20.10.5:8081/enocre/websocket/echo.do";
     var output;
     function init() {
     	console.log("socket_init");
@@ -92,9 +94,12 @@
         //output.appendChild(pre);
         if(message == "java_client") {
         	setting.enableSetting();
-        } else if(message == "logout") {
+        } else if(message.indexOf("logout") != -1) {
         	console.log("logout");
+        	var mirror_id = message.slice(message.length-11, message.length);
+        	console.log("mirror_id = "+mirror_id);
         	logout.enableLogoutSetting();
+        	$("#mirror_id_invalidate").submit();
         } else if(message.indexOf("login") != -1) {
         	var message_login = message.slice(message.length-5, message.length);
             var message_id = message.slice(0, message.length-6);
@@ -345,3 +350,6 @@
 	   		}
     }
     </script>
+<form id="mirror_id_invalidate" action="newsWeb.do" method="get">
+        <input type="hidden" name="key" value="218M10N0001">
+    </form>

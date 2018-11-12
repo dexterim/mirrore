@@ -217,15 +217,19 @@ public class MemberWebController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
-		String key_skill, resultStr = "";
+		String key_skill ="";
+		String resultStr = "";
+		String mirror_id = "";
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
+		mirror_id = (String)hashMap.get("mirror_id");
 		key_skill = (String)hashMap.get("key_skill");
+		System.out.println("미러 아이디: "+mirror_id);
 		System.out.println("로그아웃: "+key_skill);
 		try{		
 			com.neovisionaries.ws.client.WebSocket ws = connect();
-			ws.sendText("logout");
+			ws.sendText("logout_"+mirror_id);
 			resultStr = "success";
 		} catch (ArrayIndexOutOfBoundsException ae) {
 			log.info("array 오류가 발생했습니다."+ae);
@@ -339,7 +343,7 @@ public class MemberWebController {
     {
         return new WebSocketFactory()
             .setConnectionTimeout(5000)
-            .createSocket("ws://172.18.71.3:8081/enocre/websocket/echo.do")
+            .createSocket("ws://172.20.10.5:8081/enocre/websocket/echo.do")
             .addListener(new WebSocketAdapter() {
                 // A text message arrived from the server.
                 public void onTextMessage(WebSocket websocket, String message) {
