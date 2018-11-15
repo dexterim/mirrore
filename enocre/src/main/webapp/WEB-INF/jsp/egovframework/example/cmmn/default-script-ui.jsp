@@ -24,6 +24,9 @@
     <!-- Black Dashboard DEMO methods, don't include it in your project! -->
     <script src="demo/demo.js"></script>
     
+    <!-- TTS Speech Service -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.95.1/js/materialize.min.js"></script>
+    
     <!-- web_socket -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <!-- stomp -->
@@ -34,12 +37,13 @@
 	$(function() {
 		//console.log("tilesWatchOnOffStr:"+ tilesWatchOnOffStr +"pathStr : "+pathStr);
 		/* tilesWatch.tilesWatchDisplay(tilesWatchOnOffStr); */
-		var query = new URLSearchParams(location.search);
-		console.log("queryString :" + query.get('key'));
 		step.scrolling(1);
-		
+		logout.enableLogoutSetting();
 		//connect websocket
 		send_message();
+		$('#speak').click(function(){
+			tilesSpeech.tilesSpeechFunc();
+		});
 	});
 	var tilesWatchOnOffStr = "<c:out value="${param.tilesWatch}"/>";
 	var userId = "";
@@ -48,7 +52,7 @@
     var height = $('#rank li').height();
     
     //websocket
-    var wsUri = "ws://172.20.10.5:8081/enocre/websocket/echo.do";
+    var wsUri = "ws://localhost:8080/enocre/websocket/echo.do";
     var output;
     function init() {
     	console.log("socket_init");
@@ -94,12 +98,9 @@
         //output.appendChild(pre);
         if(message == "java_client") {
         	setting.enableSetting();
-        } else if(message.indexOf("logout") != -1) {
+        } else if(message == "logout") {
         	console.log("logout");
-        	var mirror_id = message.slice(message.length-11, message.length);
-        	console.log("mirror_id = "+mirror_id);
         	logout.enableLogoutSetting();
-        	$("#mirror_id_invalidate").submit();
         } else if(message.indexOf("login") != -1) {
         	var message_login = message.slice(message.length-5, message.length);
             var message_id = message.slice(0, message.length-6);
@@ -250,11 +251,11 @@
     }
     var logout = {
     		enableLogoutSetting : function() {
-    			tilesWatch.tilesWatchDisplay(0);
-				tilesNews.tilesNewsDisplay(0);
-				tilesSubway.tilesSubwayDisplay(0);
-				tilesCalendar.tilesCalendarDisplay(0);
-				tilesMemo.tilesMemoDisplay(0);
+    			tilesWatch.tilesWatchDisplay(1);
+				tilesNews.tilesNewsDisplay(1);
+				tilesSubway.tilesSubwayDisplay(1);
+				tilesCalendar.tilesCalendarDisplay(1);
+				tilesMemo.tilesMemoDisplay(1);
     		}
     }
     
@@ -349,7 +350,48 @@
 	   			}
 	   		}
     }
+    var tilesSpeech = {
+    		tilesSpeechFunc : function(str) {
+    		   
+    		        console.log($('#voices').val());
+    		        var text = "이곳에 텍스트값을 넣어 주세요";
+    		        var msg = new SpeechSynthesisUtterance();
+    		        var voices = window.speechSynthesis.getVoices();
+    		        msg.voice = voices[13];
+    		        msg.rate = 1;
+    		        msg.pitch = 1;
+    		        msg.text = text;
+
+    		        msg.onend = function(e) {
+    		          console.log('Finished in ' + event.elapsedTime + ' seconds.');
+    		        };
+    		        speechSynthesis.speak(msg);
+
+    		  // 음성종류의 배열(voices)의 방번호 
+
+    		  // 0: Microsoft Heami Desktop - Korean (default)
+    		  // 1: Microsoft Zira Desktop - English (United States)
+    		  // 2: Google Deutsch
+    		  // 3: Google US English
+    		  // 4:Google UK English Female
+    		  // 5: Google UK English Male
+    		  // 6: Google español
+    		  // 7: Google español de Estados Unidos
+    		  // 8: Google français
+    		  // 9: Google हिन्दी
+    		  // 10: Google Bahasa Indonesia
+    		  // 11: Google italiano
+    		  // 12: Google 日本語
+    		  // 13: Google 한국의
+    		  // 14: Google Nederlands
+    		  // 15: Google polski
+    		  // 16: Google português do Brasil
+    		  // 17: Google русский
+    		  // 18: Google 普通话（中国大陆）
+    		  // 19: Google 粤語（香港）
+    		  // 20: Google 國語（臺灣）
+
+    		
+    		}
+    }
     </script>
-<form id="mirror_id_invalidate" action="newsWeb.do" method="get">
-        <input type="hidden" name="key" value="218M10N0001">
-    </form>
