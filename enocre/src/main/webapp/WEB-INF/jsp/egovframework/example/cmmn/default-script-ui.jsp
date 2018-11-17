@@ -41,9 +41,6 @@
 		logout.enableLogoutSetting();
 		//connect websocket
 		send_message();
-		$('#speak').click(function(){
-			tilesSpeech.tilesSpeechFunc();
-		});
 	});
 	var tilesWatchOnOffStr = "<c:out value="${param.tilesWatch}"/>";
 	var userId = "";
@@ -52,7 +49,7 @@
     var height = $('#rank li').height();
     
     //websocket
-    var wsUri = "ws://localhost:8080/enocre/websocket/echo.do";
+    var wsUri = "ws://172.18.71.163:8081/enocre/websocket/echo.do";
     var output;
     function init() {
     	console.log("socket_init");
@@ -125,9 +122,12 @@
         		userId = message_id;
             	memberInfo.getMemberInfo("update_member_subway_loc", userId);
         	}
+        } else if(message.indexOf("speakText") != -1) {
+        	var speakStr = message.slice(10, message.length);
+        	console.log(speakStr);
+    		tilesSpeech.tilesSpeechFunc(speakStr);
         }
     }
-
     window.addEventListener("load", init, false);
     
     //memberInfo select
@@ -168,7 +168,9 @@
     								
     							}
     							var message_subway_loc = item.subwayLoc;
-    							console.log("subway_loc: "+message_subway_loc);	
+    							console.log("subway_loc: "+message_subway_loc);
+    							
+    							subway_task.getSubway(message_subway_loc);
     							
     							if(updateType == "login") {
     								welcomeUser.sayHello(message_name);
@@ -350,11 +352,59 @@
 	   			}
 	   		}
     }
+    
+    var subway_task = {
+			getSubway : function(subway_loc) {
+				var train_day = new Date();
+				train_day = train_day.getDay();
+				
+				if(train_day == 0) {
+					train_day="3";
+				} else if(train_day == 6) {
+					train_day="2";
+				} else {
+					train_day="1";
+				}
+				console.log("url 위~~~~~",subway_url);
+				for(i=1;i<3;i++){
+				var subway_url = "http://openapi.seoul.go.kr:8088/515047645379616e39385a67724e65/json/SearchArrivalInfoByIDService/1/2/"+subway_loc+"/"+i+"/"+train_day;
+					/* if(i=1){
+						
+					}
+					else{
+						
+					} */
+				}
+				
+				console.log(subway_url);
+				
+				
+    	         $.ajax({
+    	               type:"GET",
+    	               url:subway_url,
+    	               success:function(json){
+    	                  var json_string = JSON.stringify(json);
+    	                  console.log("subway_json_string: "+json_string)
+    	                   var list = JSON.parse(json);
+    	                   console.log(list[''])
+    	                   
+    	                   console.log('subway_contentStr'+contentStr);
+    	                   $("#ascending_subway").append(json);
+    	                   $("#descending_subway").append(contentStr);
+    	                   console.log("url~~~~: ",subway_url);
+    	                   console.log("subway_loc~~~ : ",subway_loc);
+    	               }
+    	           
+    	           });
+    	      }
+    	}
+    
+    
     var tilesSpeech = {
     		tilesSpeechFunc : function(str) {
     		   
     		        console.log($('#voices').val());
-    		        var text = "이곳에 텍스트값을 넣어 주세요";
+    		        var text = str;
     		        var msg = new SpeechSynthesisUtterance();
     		        var voices = window.speechSynthesis.getVoices();
     		        msg.voice = voices[13];
