@@ -17,6 +17,11 @@ public class MemoWebServiceImpl implements MemoWebService {
 	private MemoWebMapper memoWebMapper;
 	
 	@Override
+	public List<EgovMap> selectMemoService(String member_id) throws Exception {
+		// TODO Auto-generated method stub
+		return memoWebMapper.selectMemoService(member_id);
+	}
+	@Override
 	public void insertMemoService(Map<String, Object> hashMap) throws Exception {
 		// TODO Auto-generated method stub
 		memoWebMapper.insertMemoService(hashMap);
@@ -27,9 +32,10 @@ public class MemoWebServiceImpl implements MemoWebService {
 		memoWebMapper.updateMemoService(hashMap);
 	}
 	@Override
-	public void deleteMemoService(Map<String, Object> hashMap) throws Exception {
+	public void deleteMemoService(String identifier) throws Exception {
 		// TODO Auto-generated method stub
-		memoWebMapper.deleteMemoService(hashMap);
+		memoWebMapper.deleteMemoService(identifier);
 	}
+	
 	
 }

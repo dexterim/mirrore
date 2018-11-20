@@ -49,7 +49,7 @@
     var height = $('#rank li').height();
     
     //websocket
-    var wsUri = "ws://172.18.71.163:8081/enocre/websocket/echo.do";
+    var wsUri = "ws://172.18.65.185:8081/enocre/websocket/echo.do";
     var output;
     function init() {
     	console.log("socket_init");
@@ -126,6 +126,11 @@
         	var speakStr = message.slice(10, message.length);
         	console.log(speakStr);
     		tilesSpeech.tilesSpeechFunc(speakStr);
+    		
+        } else if(message.indexOf("memo_update") != -1) {
+            var message_id = message.slice(message.length-14, message.length);
+            selectMemo.showMemo(message_id);
+            
         }
     }
     window.addEventListener("load", init, false);
@@ -174,6 +179,8 @@
     							
     							if(updateType == "login") {
     								welcomeUser.sayHello(message_name);
+    								//사용자 메모 데이터
+    								selectMemo.showMemo(userId);
         			            	setTimeout(function() { 
         			            		setting.enableSetting();
         			            		}, 2000);
@@ -251,13 +258,41 @@
    				}});
     		}
     }
+    var selectMemo = {
+    		showMemo : function(userId) {
+    			id_session = {"id_session_value" : userId};
+    			$.ajax({
+    				type		: "post",
+    				url			: "selectMemo.do",
+    				data		: JSON.stringify(id_session),
+    				contentType	: "application/json",
+    				success		: function(data){
+    					var jobj_parse = JSON.parse(data);
+    					if(jobj_parse.result === "success") {
+    						var json_memo = jobj_parse.memoList;
+    						var memo_str = "";
+    						$.each(json_memo, function(i, item) {
+    							
+    							memo_str +="<div class='alert alert-info' style='background:#27293d;'>";
+    							memo_str +="<button type='button' aria-hidden='true' class='close' data-dismiss='alert' aria-label='Close'>";
+    							memo_str +="<i class='tim-icons icon-simple-remove'></i></button><b>";
+    							memo_str +=item.title;
+    							memo_str +="</b><span>";
+    							memo_str +=item.content;
+    							memo_str +="</span></div>";
+    						});
+    						$('#memo_area').html(memo_str);
+    					}
+    				}});
+    		}
+    }
     var logout = {
     		enableLogoutSetting : function() {
-    			tilesWatch.tilesWatchDisplay(1);
-				tilesNews.tilesNewsDisplay(1);
-				tilesSubway.tilesSubwayDisplay(1);
-				tilesCalendar.tilesCalendarDisplay(1);
-				tilesMemo.tilesMemoDisplay(1);
+    			tilesWatch.tilesWatchDisplay(0);
+				tilesNews.tilesNewsDisplay(0);
+				tilesSubway.tilesSubwayDisplay(0);
+				tilesCalendar.tilesCalendarDisplay(0);
+				tilesMemo.tilesMemoDisplay(0);
     		}
     }
     

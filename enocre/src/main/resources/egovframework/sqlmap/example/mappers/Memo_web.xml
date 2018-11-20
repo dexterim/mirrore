@@ -2,9 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="egovframework.example.memo.service.impl.MemoWebMapper">
 
+	<select id="selectMemoService" parameterType="String" resultType="egovMap">
+		SELECT TITLE, CONTENT
+		FROM MEMO
+  		  <where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND MEMBER_ID = #{_parameter}	
+			</if>
+		</where>
+		ORDER BY LAST_UPLOAD_DATE DESC
+	</select>
+	
 	<insert id="insertMemoService" parameterType="map">
-    INSERT INTO MEMO (MEMBER_ID, TITLE, CONTENT) 
+    INSERT INTO MEMO (MEMBER_ID, MEMO_ID, TITLE, CONTENT) 
     VALUES (#{member_id, jdbcType=VARCHAR}, 
+    		#{identifier},
     		#{title}, 
     		#{content})
 	</insert>
@@ -13,14 +25,15 @@
 		UPDATE MEMO
 		SET TITLE = #{title},
 		 	CONTENT = #{content}
-		WHERE MEMBER_ID = #{member_id}
-		AND MEMO_ID = {memo_id};
+		WHERE MEMO_ID = #{identifier}
 	</update>
 	
-	<delete id="deleteMemoService" parameterType="map"> 
+	<delete id="deleteMemoService" parameterType="String"> 
 		DELETE FROME MEMO 
-		WHERE MEMBER_ID = #{id}
-		AND TITLE = #{title}
-		AND LAST_UPLOAD_DATE = #{last_upload_date};
+		<where>
+			<if test='_parameter != null and _parameter != ""'>
+				AND MEMO_ID = #{_parameter}	
+			</if>
+		</where>
 	</delete>
 </mapper>
