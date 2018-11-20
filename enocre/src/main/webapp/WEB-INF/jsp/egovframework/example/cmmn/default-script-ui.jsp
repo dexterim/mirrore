@@ -128,7 +128,7 @@
     		tilesSpeech.tilesSpeechFunc(speakStr);
     		
         } else if(message.indexOf("memo_update") != -1) {
-            var message_id = message.slice(message.length-14, message.length);
+            var message_id = message.slice(13, message.length);
             selectMemo.showMemo(message_id);
             
         }

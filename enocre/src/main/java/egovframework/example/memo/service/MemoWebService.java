@@ -13,7 +13,7 @@ public interface MemoWebService {
 	void insertMemoService(Map<String, Object> hashMap) throws Exception;
 	//update
 	void updateMemoService(Map<String, Object> hashMap) throws Exception;
-	//update
+	//delete
 	void deleteMemoService(String identifier) throws Exception;
 
 }

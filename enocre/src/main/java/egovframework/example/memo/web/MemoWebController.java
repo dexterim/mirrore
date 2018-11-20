@@ -108,7 +108,7 @@ public class MemoWebController {
 		
 		member_id = hashMap.get("member_id").toString();
 		
-		try{			
+		try{
 			com.neovisionaries.ws.client.WebSocket ws = connect();
 			ws.sendText("memo_update: "+member_id);
 			
@@ -174,10 +174,6 @@ public class MemoWebController {
             .setConnectionTimeout(5000)
             .createSocket("ws://172.18.65.185:8081/enocre/websocket/echo.do")
             .addListener(new WebSocketAdapter() {
-                // A text message arrived from the server.
-                public void onTextMessage(WebSocket websocket, String message) {
-                    System.out.println(message);
-                }
             })
             .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
             .connect();
