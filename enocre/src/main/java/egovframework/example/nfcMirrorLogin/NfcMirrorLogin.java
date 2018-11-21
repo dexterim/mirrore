@@ -36,8 +36,6 @@ public class NfcMirrorLogin{
 		String resultStr;
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
-		
-		System.out.println(hashMap);
 		try{		
 			com.neovisionaries.ws.client.WebSocket ws = connect();
 			ws.sendText(hashMap.get("id")+" mirror_login");
@@ -49,18 +47,20 @@ public class NfcMirrorLogin{
 			log.info("그 외 오류가 발생했습니다."+e);
 		} finally {
 			log.info("mirror_login.do");
+			
+			
+			System.out.println(hashMap);
+			resultStr= "success";
+			response.setCharacterEncoding("utf-8");
+			
+			PrintWriter print = response.getWriter();
+			
+			//print.write(resultStr);
+			print.print(resultStr);
+			print.flush();
+			//return "redirect:/enocreWeb.do";
 		}
 		
-		
-		resultStr= "success";
-		response.setCharacterEncoding("utf-8");
-		
-		PrintWriter print = response.getWriter();
-		
-		//print.write(resultStr);
-		print.print(resultStr);
-		print.flush();
-		//return "redirect:/enocreWeb.do";
 	}
 	
 	public static com.neovisionaries.ws.client.WebSocket connect() throws Exception
