@@ -17,6 +17,7 @@ import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
+import egovframework.example.enocreWeb.service.EnocreWebService;
 import egovframework.example.memberWeb.service.MemberWebService;
 import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 
@@ -29,7 +30,7 @@ public class NfcMirrorLogin{
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Resource(name="memberWebService")
-	private MemberWebService memberWebService;
+	private EnocreWebService memberWebService;
 	
 	@Resource(name="nfcMirrorLoginService")
 	private NfcMirrorLoginService nfcMirrorLoginService;
@@ -43,11 +44,11 @@ public class NfcMirrorLogin{
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			HashMap<String,Object> hashMap_mirror = new HashMap<String,Object>();
-			hashMap.put("member_key", "now_condition");
-			hashMap.put("member_value", 1);
+			hashMap.put("setting_key", "now_condition");
+			hashMap.put("setting_id", hashMap.get("id"));
 			hashMap.put("member_id", hashMap.get("id"));
 			
-			memberWebService.updateMember(hashMap_mirror);
+			memberWebService.updateOnSetting(hashMap_mirror);
 			nfcMirrorLoginService.updateMemberMirror(hashMap_mirror);
 			String mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
 			if(mirror_login_user.equals(hashMap.get("id"))){
