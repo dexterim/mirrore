@@ -44,9 +44,9 @@ public class NfcMirrorLogin{
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			HashMap<String,Object> hashMap_mirror = new HashMap<String,Object>();
-			hashMap.put("setting_key", "now_condition");
-			hashMap.put("setting_id", hashMap.get("id"));
-			hashMap.put("member_id", hashMap.get("id"));
+			hashMap_mirror.put("setting_key", "now_condition");
+			hashMap_mirror.put("setting_id", hashMap.get("id"));
+			hashMap_mirror.put("member_id", hashMap.get("id"));
 			
 			enocreWebService.updateOnSetting(hashMap_mirror);
 			nfcMirrorLoginService.updateMemberMirror(hashMap_mirror);
