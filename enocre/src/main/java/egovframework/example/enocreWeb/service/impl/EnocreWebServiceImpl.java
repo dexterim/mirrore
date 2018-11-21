@@ -36,7 +36,7 @@ public class EnocreWebServiceImpl implements EnocreWebService {
 		enocreWebMapper.updateOnSetting(hashmap);
 	}
 	@Override
-	public void updateOffSetting(HashMap<String, Object> hashMap) throws Exception {
+	public void updateOffSetting(Map<String, Object> hashMap) throws Exception {
 		enocreWebMapper.updateOffSetting(hashMap);
 		
 	}

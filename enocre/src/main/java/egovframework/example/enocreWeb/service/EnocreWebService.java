@@ -12,7 +12,7 @@ public interface EnocreWebService {
 	MemberVO selectEnocreWebServiceVO() throws Exception;
 	String selectSettingService() throws Exception;
 	void updateOnSetting(Map<String,Object> hashMap) throws Exception;
-	void updateOffSetting(HashMap<String, Object> hashMap) throws Exception;
+	void updateOffSetting(Map<String, Object> hashMap) throws Exception;
 	
 	String selectEnocreLoginServiceList(String id) throws Exception;
 	String insertRegisterServiceMap(Map<String, Object> hashMap) throws Exception;

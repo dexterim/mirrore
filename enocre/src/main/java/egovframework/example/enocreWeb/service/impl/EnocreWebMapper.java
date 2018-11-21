@@ -16,7 +16,7 @@ public interface EnocreWebMapper {
 	String selectSettingService() throws Exception;
 	
 	void updateOnSetting(Map<String, Object> updateOnSetting) throws Exception;
-	void updateOffSetting(HashMap<String, Object> hashMap) throws Exception;
+	void updateOffSetting(Map<String, Object> hashMap) throws Exception;
 	
 	String selectEnocreLoginServiceList(String id) throws Exception;
 	int insertRegisterServiceMap(Map<String, Object> hashMap) throws Exception;

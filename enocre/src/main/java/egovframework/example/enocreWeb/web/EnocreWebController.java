@@ -96,12 +96,8 @@ public class EnocreWebController {
 		System.out.println("update_value : "+setting_value);
 		System.out.println("update_id : "+setting_id);
 		
-		HashMap<String,Object> hashMap_update = new HashMap<String,Object>();
-		hashMap.put("setting_key", setting_key);
-		hashMap.put("setting_id", setting_id);
-		
 		if(setting_value.equals("1")) {
-			enocreWebService.updateOnSetting(hashMap_update);
+			enocreWebService.updateOnSetting(hashMap);
 			switch(setting_key) {
 			case "watch":
 				model.addAttribute("tilesWatch", 1);
@@ -125,7 +121,7 @@ public class EnocreWebController {
 			}
 			resultStr = "success";
 		} else {
-			enocreWebService.updateOffSetting(hashMap_update);
+			enocreWebService.updateOffSetting(hashMap);
 			switch(setting_key) {
 			case "watch":
 				model.addAttribute("tilesWatch", 0);
