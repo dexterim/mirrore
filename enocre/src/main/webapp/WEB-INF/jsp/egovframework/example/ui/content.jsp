@@ -60,6 +60,7 @@
 									<div id="animationSandbox" style="display: block;" class="">
 										<div id="welcomeUser" style="color:#fff; font-size: 4.2em"></div>
 								        <div id="output"></div>
+								        <div id="voice"></div>
 									</div>
 								</div>
 						     </div>

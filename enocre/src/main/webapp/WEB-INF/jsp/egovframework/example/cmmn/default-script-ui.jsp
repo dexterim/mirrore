@@ -98,11 +98,14 @@
         } else if(message == "logout") {
         	console.log("logout");
         	logout.enableLogoutSetting();
-        } else if(message.indexOf("login") != -1) {
-        	var message_login = message.slice(message.length-5, message.length);
-            var message_id = message.slice(0, message.length-6);
+        } else if(message.indexOf("mirror_login") != -1) {
+        	var message_login = message.slice(message.length-12, message.length);
+            var message_id = message.slice(0, message.length-13);
             
-            if(message_login == "login") {
+            console.log("login된 아이디: "+message_id);
+            console.log("login된 key: "+message_login);
+            
+            if(message_login == "mirror_login") {
             	console.log("login된 아이디: "+message_id);
             	userId = message_id;
             	memberInfo.getMemberInfo("login", userId);
@@ -438,7 +441,7 @@
     var tilesSpeech = {
     		tilesSpeechFunc : function(str) {
     		   
-    		        console.log($('#voices').val());
+    		        console.log("음성 인식 확인: "+str);
     		        var text = str;
     		        var msg = new SpeechSynthesisUtterance();
     		        var voices = window.speechSynthesis.getVoices();

@@ -37,7 +37,20 @@ public class NfcMirrorLogin{
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
-		System.out.println("mirror_id"+hashMap);
+		System.out.println(hashMap);
+		try{		
+			com.neovisionaries.ws.client.WebSocket ws = connect();
+			ws.sendText(hashMap.get("id")+" mirror_login");
+		} catch (ArrayIndexOutOfBoundsException ae) {
+			log.info("array 오류가 발생했습니다."+ae);
+		} catch (NullPointerException ne) {
+			log.info("null 오류가 발생했습니다."+ne);
+		} catch (Exception e) {
+			log.info("그 외 오류가 발생했습니다."+e);
+		} finally {
+			log.info("mirror_login.do");
+		}
+		
 		
 		resultStr= "success";
 		response.setCharacterEncoding("utf-8");
