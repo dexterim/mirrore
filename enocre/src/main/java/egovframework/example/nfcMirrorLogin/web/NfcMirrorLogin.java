@@ -29,8 +29,8 @@ public class NfcMirrorLogin{
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	@Resource(name="memberWebService")
-	private EnocreWebService memberWebService;
+	@Resource(name="enocreWebService")
+	private EnocreWebService enocreWebService;
 	
 	@Resource(name="nfcMirrorLoginService")
 	private NfcMirrorLoginService nfcMirrorLoginService;
@@ -48,7 +48,7 @@ public class NfcMirrorLogin{
 			hashMap.put("setting_id", hashMap.get("id"));
 			hashMap.put("member_id", hashMap.get("id"));
 			
-			memberWebService.updateOnSetting(hashMap_mirror);
+			enocreWebService.updateOnSetting(hashMap_mirror);
 			nfcMirrorLoginService.updateMemberMirror(hashMap_mirror);
 			String mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
 			if(mirror_login_user.equals(hashMap.get("id"))){
