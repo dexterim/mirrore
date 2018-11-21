@@ -145,15 +145,6 @@ public class EnocreWebController {
 			}
 			resultStr = "success";
 		}
-		
-		response.setCharacterEncoding("utf-8");
-		
-		PrintWriter print = response.getWriter();
-		print.print(resultStr);
-		print.flush();
-		
-		log.debug("EnocreWebController_update_setting_success");
-		
 		try{			
 			com.neovisionaries.ws.client.WebSocket ws = connect();
 			ws.sendText("java_client");
@@ -167,6 +158,15 @@ public class EnocreWebController {
 		} finally {
 			
 		}
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		print.print(resultStr);
+		print.flush();
+		
+		log.debug("EnocreWebController_update_setting_success");
+		
+		
 		
 //		String url = "enocreWeb.do";
 		//response.sendRedirect(url);

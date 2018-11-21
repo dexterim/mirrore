@@ -1,6 +1,7 @@
-package egovframework.example.nfcMirrorLogin;
+package egovframework.example.nfcMirrorLogin.web;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -17,6 +18,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memberWeb.service.MemberWebService;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,27 +31,39 @@ public class NfcMirrorLogin{
 	@Resource(name="memberWebService")
 	private MemberWebService memberWebService;
 	
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
+	
 	@RequestMapping("nfc_mirror_login.do")
 	public void userNfcMirrorLogin(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
-		String resultStr;
-		Map<String,Object> hashMap;
-		hashMap = JsonUtil.JsonToMap(reqParam);
-		try{		
-			com.neovisionaries.ws.client.WebSocket ws = connect();
-			ws.sendText(hashMap.get("id")+" mirror_login");
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
-			log.info("mirror_login.do");
+		
+			String resultStr;
+			Map<String,Object> hashMap;
+			hashMap = JsonUtil.JsonToMap(reqParam);
+			HashMap<String,Object> hashMap_mirror = new HashMap<String,Object>();
+			hashMap.put("member_key", "now_condition");
+			hashMap.put("member_value", 1);
+			hashMap.put("member_id", hashMap.get("id"));
 			
-			
-			System.out.println(hashMap);
+			memberWebService.updateMember(hashMap_mirror);
+			nfcMirrorLoginService.updateMemberMirror(hashMap_mirror);
+			String mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
+			if(mirror_login_user.equals(hashMap.get("id"))){
+				try{		
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					ws.sendText(mirror_login_user+" mirror_login");
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				} finally {
+					log.info("mirror_login.do");
+				}
+			}
 			resultStr= "success";
 			response.setCharacterEncoding("utf-8");
 			
@@ -59,7 +73,7 @@ public class NfcMirrorLogin{
 			print.print(resultStr);
 			print.flush();
 			//return "redirect:/enocreWeb.do";
-		}
+			
 		
 	}
 	public void nfcCheck(HttpServletRequest request){
