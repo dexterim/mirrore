@@ -3,6 +3,7 @@ package egovframework.example.enocreWeb.web;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -21,6 +23,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketExtension;
 
+import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.enocreWeb.service.EnocreWebService;
 import egovframework.example.webSocket.web.MyHandler;
 import egovframework.example.webSocket.web.WebSocket;
@@ -76,9 +79,84 @@ public class EnocreWebController {
 	}
 	@RequestMapping("update_setting.do")
 	public void updateSetting(
+			@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
+		
+		String setting_key, setting_value, setting_id, resultStr = null;
+		Map<String,Object> hashMap;
+		hashMap = JsonUtil.JsonToMap(reqParam);
+		
+		setting_key = (String)hashMap.get("setting_key");
+		setting_value = (String)hashMap.get("setting_value");
+		setting_id = (String)hashMap.get("setting_id");
+		
+		System.out.println("update_column : "+setting_key);
+		System.out.println("update_value : "+setting_value);
+		System.out.println("update_id : "+setting_id);
+		
+		HashMap<String,Object> hashMap_update = new HashMap<String,Object>();
+		hashMap.put("setting_key", setting_key);
+		hashMap.put("setting_id", setting_id);
+		
+		if(setting_value.equals("1")) {
+			enocreWebService.updateOnSetting(hashMap_update);
+			switch(setting_key) {
+			case "watch":
+				model.addAttribute("tilesWatch", 1);
+				break;
+			case "memo":
+				System.out.println("memo on");
+				model.addAttribute("tilesMemo", 1);
+				break;
+			case "calendar":
+				System.out.println("calendar on");
+				model.addAttribute("tilesCalendar", 1);
+				break;	
+			case "subway":
+				System.out.println("subway on");
+				model.addAttribute("tilesSubway", 1);
+				break;
+			case "news":
+				System.out.println("news on");
+				model.addAttribute("tilesNews", 1);
+				break;
+			}
+			resultStr = "success";
+		} else {
+			enocreWebService.updateOffSetting(hashMap_update);
+			switch(setting_key) {
+			case "watch":
+				model.addAttribute("tilesWatch", 0);
+				break;
+			case "memo":
+				System.out.println("memo off");
+				model.addAttribute("tilesMemo", 0);
+				break;
+			case "calendar":
+				System.out.println("calendar off");
+				model.addAttribute("tilesCalendar", 0);
+				break;	
+			case "subway":
+				System.out.println("subway off");
+				model.addAttribute("tilesSubway", 0);
+				break;
+			case "news":
+				System.out.println("news off");
+				model.addAttribute("tilesNews", 0);
+				break;
+			}
+			resultStr = "success";
+		}
+		
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		print.print(resultStr);
+		print.flush();
+		
+		log.debug("EnocreWebController_update_setting_success");
 		
 		try{			
 			com.neovisionaries.ws.client.WebSocket ws = connect();
@@ -91,76 +169,7 @@ public class EnocreWebController {
 		} catch (Exception e) {
 			log.info("그 외 오류가 발생했습니다."+e);
 		} finally {
-			String setting_key, setting_value, setting_id, resultStr = null;
-			setting_key = request.getParameter("setting_key");
-			setting_value = request.getParameter("setting_value");
-			setting_id = request.getParameter("setting_id");
 			
-			System.out.println("update_column : "+setting_key);
-			System.out.println("update_value : "+setting_value);
-			System.out.println("update_id : "+setting_id);
-			
-			HashMap<String,Object> hashMap = new HashMap<String,Object>();
-			hashMap.put("setting_key", setting_key);
-			hashMap.put("setting_id", setting_id);
-			
-			if(setting_value.equals("1")) {
-				enocreWebService.updateOnSetting(hashMap);
-				switch(setting_key) {
-				case "watch":
-					model.addAttribute("tilesWatch", 1);
-					break;
-				case "memo":
-					System.out.println("memo on");
-					model.addAttribute("tilesMemo", 1);
-					break;
-				case "calendar":
-					System.out.println("calendar on");
-					model.addAttribute("tilesCalendar", 1);
-					break;	
-				case "subway":
-					System.out.println("subway on");
-					model.addAttribute("tilesSubway", 1);
-					break;
-				case "news":
-					System.out.println("news on");
-					model.addAttribute("tilesNews", 1);
-					break;
-				}
-				resultStr = "success";
-			} else {
-				enocreWebService.updateOffSetting(hashMap);
-				switch(setting_key) {
-				case "watch":
-					model.addAttribute("tilesWatch", 0);
-					break;
-				case "memo":
-					System.out.println("memo off");
-					model.addAttribute("tilesMemo", 0);
-					break;
-				case "calendar":
-					System.out.println("calendar off");
-					model.addAttribute("tilesCalendar", 0);
-					break;	
-				case "subway":
-					System.out.println("subway off");
-					model.addAttribute("tilesSubway", 0);
-					break;
-				case "news":
-					System.out.println("news off");
-					model.addAttribute("tilesNews", 0);
-					break;
-				}
-				resultStr = "success";
-			}
-			
-			response.setCharacterEncoding("utf-8");
-			
-			PrintWriter print = response.getWriter();
-			print.print(resultStr);
-			print.flush();
-			
-			log.debug("EnocreWebController_update_setting_success");
 		}
 		
 //		String url = "enocreWeb.do";

@@ -62,6 +62,9 @@ public class NfcMirrorLogin{
 		}
 		
 	}
+	public void nfcCheck(HttpServletRequest request){
+		String mirror_id = request.getParameter("mirror_id");
+	}
 	
 	public static com.neovisionaries.ws.client.WebSocket connect() throws Exception
     {
