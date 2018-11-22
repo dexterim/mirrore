@@ -115,7 +115,7 @@ public class EnocreWebController {
 				result= "validated_user";
 			}
 		}
-		
+		System.out.println("result:"+result);
 		if(result.equals("validated_user")){
 		
 			try{			
