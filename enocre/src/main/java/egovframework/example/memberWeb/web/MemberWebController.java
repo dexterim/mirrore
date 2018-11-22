@@ -307,7 +307,7 @@ public class MemberWebController {
 						
 					}else if(member_key.equals("subway_loc")) {
 						System.out.println("subway_loc 변경");
-						ws.sendText(member_value+" "+member_id+" update_member_subway_loc");
+						ws.sendText(member_id+" update_member_subway_loc");
 					}
 					
 				} catch (ArrayIndexOutOfBoundsException ae) {
