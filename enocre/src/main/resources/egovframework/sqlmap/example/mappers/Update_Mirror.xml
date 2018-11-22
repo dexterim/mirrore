@@ -8,9 +8,7 @@
 	<update id="updateMemberMirror" parameterType="map">
 		UPDATE SETTING
 		SET NOW_CONDITION = 0
-		<!--[CDATA[
-			WHERE MEMBER_ID <> #{member_id}
- 		]]-->
+		WHERE MEMBER_ID != #{member_id}
 	</update>
 	
 </mapper>
