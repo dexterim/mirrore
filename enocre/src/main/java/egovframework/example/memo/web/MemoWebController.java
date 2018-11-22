@@ -103,10 +103,6 @@ public class MemoWebController {
 			}
 
 			memoWebService.insertMemoService(hashMap);
-			
-			if(result.equals("validated_user")){
-				webSocketMemoUpdate(member_id);
-			}
 			response.setCharacterEncoding("utf-8");
 			
 			PrintWriter print = response.getWriter();
@@ -154,10 +150,6 @@ public class MemoWebController {
 		}
 		memoWebService.updateMemoService(hashMap);
 		
-		if(result.equals("validated_user")){
-			webSocketMemoUpdate(member_id);
-		}
-		
 		PrintWriter print = response.getWriter();
 		
 		//print.write(resultStr);
@@ -202,10 +194,6 @@ public class MemoWebController {
 			}
 		}
 		memoWebService.deleteMemoService(hashMap.get("identifier").toString());
-		
-		if(result.equals("validated_user")){
-			webSocketMemoUpdate(member_id);
-		}
 		
 		response.setCharacterEncoding("utf-8");
 		
