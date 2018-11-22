@@ -22,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memberWeb.service.MemberWebService;
 import egovframework.example.memberWeb.service.SessionVO;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.MyHandler;
 import egovframework.example.webSocket.web.WebSocket;
@@ -38,6 +39,10 @@ public class MemberWebController {
 	
 	@Resource(name="memberWebService")
 	private MemberWebService memberWebService;
+	
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
+
 	
 	@RequestMapping("register.do")
 	public void userRegister(@RequestBody String reqParam,
@@ -281,8 +286,13 @@ public class MemberWebController {
 			memberWebService.updateMember(hashMap);
 			mirror_id = hashMap.get("mirror_id").toString();
 			
-			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-			result = nfcLogin.nfcCheck(mirror_id);
+			if(!mirror_id.equals("")){
+				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				System.out.println("member_check:"+member_check);
+				if(member_id.equals(member_check)){
+					result= "validated_user";
+				}
+			}
 			
 			if(result.equals("validated_user")){
 				
