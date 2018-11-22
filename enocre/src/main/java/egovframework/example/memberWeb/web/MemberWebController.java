@@ -285,6 +285,7 @@ public class MemberWebController {
 					
 			memberWebService.updateMember(hashMap);
 			mirror_id = hashMap.get("mirror_id").toString();
+			System.out.println("mirrror_id:"+mirror_id);
 			
 			if(!mirror_id.equals("")){
 				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
