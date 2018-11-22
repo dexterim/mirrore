@@ -78,6 +78,7 @@ public class NfcMirrorLogin{
 			
 		
 	}
+	@RequestMapping("nfc_check.do")
 	public String nfcCheck(String setting_id){
 		String mirror_login_user = "", resultStr ="";
 		try {
