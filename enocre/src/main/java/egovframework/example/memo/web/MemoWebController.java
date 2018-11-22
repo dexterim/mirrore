@@ -22,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memo.service.MemoWebService;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.WebSocket;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
@@ -33,6 +34,9 @@ public class MemoWebController {
 	
 	@Resource(name="memoWebService")
 	private MemoWebService memoWebService;
+
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
 	
 	@RequestMapping(value = "selectMemo.do")
 	public void selectMemo(@RequestBody String reqParam,
@@ -66,17 +70,37 @@ public class MemoWebController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		
-			String member_id, mirror_id, result;
+			String member_id, mirror_id, result = "";
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
 			System.out.println(hashMap+"\n:메모 정보 입력");
+			mirror_id = hashMap.get("mirror_id").toString();
 			member_id = hashMap.get("member_id").toString();
 			
-			mirror_id = hashMap.get("mirror_id").toString();
+			if(!mirror_id.equals("")){
+				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				System.out.println("member_check:"+member_check);
+				if(member_id.equals(member_check)){
+					result= "validated_user";
+				}
+			}else{
+				result="invalidate_session";
+			}
 			
-			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-			result = nfcLogin.nfcCheck(mirror_id);
+			if(result.equals("validated_user")){
+			
+				try{	
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					ws.sendText("memo_update:"+member_id);
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				}
+			}
 
 			memoWebService.insertMemoService(hashMap);
 			
@@ -96,18 +120,38 @@ public class MemoWebController {
 	public void memoUpdate(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String member_id, mirror_id, result;
+		String member_id, mirror_id, result = "";
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
 		System.out.println("\n:메모 정보 업데이트");
 		
-		member_id = hashMap.get("member_id").toString();
 		mirror_id = hashMap.get("mirror_id").toString();
+		member_id = hashMap.get("member_id").toString();
 		
-		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-		result = nfcLogin.nfcCheck(mirror_id);
+		if(!mirror_id.equals("")){
+			String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+			System.out.println("member_check:"+member_check);
+			if(member_id.equals(member_check)){
+				result= "validated_user";
+			}
+		}else{
+			result="invalidate_session";
+		}
 		
+		if(result.equals("validated_user")){
+		
+			try{	
+				com.neovisionaries.ws.client.WebSocket ws = connect();
+				ws.sendText("memo_update:"+member_id);
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				log.info("array 오류가 발생했습니다."+ae);
+			} catch (NullPointerException ne) {
+				log.info("null 오류가 발생했습니다."+ne);
+			} catch (Exception e) {
+				log.info("그 외 오류가 발생했습니다."+e);
+			}
+		}
 		memoWebService.updateMemoService(hashMap);
 		
 		if(result.equals("validated_user")){
@@ -125,20 +169,38 @@ public class MemoWebController {
 	public void memoDelete(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String member_id, mirror_id, result;
+		String member_id, mirror_id, result = "";
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
 		System.out.println(hashMap.get("identifier")+"\n:메모 정보 삭제");
 		
-		member_id = hashMap.get("member_id").toString();
-		System.out.println("delete_memo_member_id: "+member_id);
-		
 		mirror_id = hashMap.get("mirror_id").toString();
+		member_id = hashMap.get("member_id").toString();
 		
-		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-		result = nfcLogin.nfcCheck(mirror_id);
+		if(!mirror_id.equals("")){
+			String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+			System.out.println("member_check:"+member_check);
+			if(member_id.equals(member_check)){
+				result= "validated_user";
+			}
+		}else{
+			result="invalidate_session";
+		}
 		
+		if(result.equals("validated_user")){
+		
+			try{	
+				com.neovisionaries.ws.client.WebSocket ws = connect();
+				ws.sendText("memo_update:"+member_id);
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				log.info("array 오류가 발생했습니다."+ae);
+			} catch (NullPointerException ne) {
+				log.info("null 오류가 발생했습니다."+ne);
+			} catch (Exception e) {
+				log.info("그 외 오류가 발생했습니다."+e);
+			}
+		}
 		memoWebService.deleteMemoService(hashMap.get("identifier").toString());
 		
 		if(result.equals("validated_user")){
