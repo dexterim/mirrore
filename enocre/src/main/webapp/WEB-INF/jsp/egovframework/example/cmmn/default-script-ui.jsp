@@ -95,7 +95,9 @@
         //output.appendChild(pre);
         if(message == "java_client") {
         	setting.enableSetting();
-        } else if(message = "init_motion"){
+        } else if(message.indexOf("update_member") != -1){
+        	console.log("alarm_motion:"+message);
+        } else if(message == "init_motion"){
         	alarmGame.init();
         } else if(message == "logout") {
         	console.log("logout");

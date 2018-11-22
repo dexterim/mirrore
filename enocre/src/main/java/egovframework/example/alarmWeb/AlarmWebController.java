@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.WebSocket;
 
@@ -28,6 +30,9 @@ import egovframework.example.webSocket.web.WebSocket;
 public class AlarmWebController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
 	
 	@RequestMapping("initAlarm.do")
 	public void initAlarmWeb(@RequestBody String reqParam,
@@ -70,20 +75,31 @@ public class AlarmWebController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		
-			String alarmValue, mirror_id, result = "";
+			String alarmValue, member_id, mirror_id, result = "";
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
 			alarmValue = hashMap.get("key_motion").toString();
 			System.out.println("모션 value 텍스트 : " + alarmValue);
 			
+			member_id = hashMap.get("member_id").toString();
 			mirror_id = hashMap.get("mirror_id").toString();
+			System.out.println("mirror_id:"+mirror_id);
 			
-			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-			result = nfcLogin.nfcCheck(mirror_id);
+			
+			if(!mirror_id.equals("")){
+				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				System.out.println("member_check:"+member_check);
+				if(member_id.equals(member_check)){
+					result= "validated_user";
+				}
+			}else{
+				result="invalidate_session";
+			}
 			
 			if(result.equals("validated_user")){
-				try{		
+				
+				try{	
 					com.neovisionaries.ws.client.WebSocket ws = connect();
 					ws.sendText(alarmValue+" key_motion");
 				} catch (ArrayIndexOutOfBoundsException ae) {
