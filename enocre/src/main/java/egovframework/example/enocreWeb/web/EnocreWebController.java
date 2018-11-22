@@ -89,7 +89,7 @@ public class EnocreWebController {
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
 		
-		String setting_key, setting_value, setting_id, mirror_id, result = null;
+		String setting_key, setting_value, setting_id, mirror_id, result = "";
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
