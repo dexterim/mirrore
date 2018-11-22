@@ -124,7 +124,8 @@
         		userId = message_id;
             	memberInfo.getMemberInfo("update_member_weather_loc", userId);
             	
-        	}else if(message.indexOf("update_member_subway_loc") != -1) {
+        	}
+        	if(message.indexOf("update_member_subway_loc") != -1) {
         		console.log("update_member_subway_loc 변경");
         		var message_id = message.slice(0, message.length-25);
         		userId = message_id;
@@ -186,16 +187,17 @@
     								welcomeUser.sayHello(message_name);
     								//사용자 메모 데이터
     								selectMemo.showMemo(userId);
+    								subway_task.getSubway(message_subway_loc);
         			            	setTimeout(function() { 
         			            		setting.enableSetting();
         			            		}, 2000);
         			           
-    							} else if(updateType.indexOf("weather_loc") != -1) {
+    							}else if(updateType.indexOf("weather_loc") != -1) {
     								
     								get_weather_api.myWeather(message_weather_loc);
     								setting.enableSetting();
     								
-    							} else if((updateType.indexOf("subway_loc")!=-1)) {
+    							}else if((updateType.indexOf("subway_loc")!=-1)) {
     								console.log("subway_loc: "+message_subway_loc);
         							subway_task.getSubway(message_subway_loc);
     							}
