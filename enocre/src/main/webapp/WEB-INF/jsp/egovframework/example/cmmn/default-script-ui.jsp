@@ -95,8 +95,6 @@
         //output.appendChild(pre);
         if(message.indexOf("java_client") != -1) {
         	setting.enableSetting();
-        } else if(message.indexOf("update_member") != -1){
-        	console.log("alarm_motion:"+message);
         } else if(message.indexOf("init_motion") != -1){
         	alarmGame.init();
         } else if(message.indexOf("logout") != -1) {
@@ -126,9 +124,9 @@
             	
         	}
         	if(message.indexOf("update_member_subway_loc") != -1) {
-        		console.log("update_member_subway_loc 변경");
         		var message_id = message.slice(0, message.length-25);
         		userId = message_id;
+        		console.log("update_member_subway_loc 변경"+message_id);
             	memberInfo.getMemberInfo("update_member_subway_loc", userId);
         	}
         } else if(message.indexOf("speakText") != -1) {
@@ -405,12 +403,12 @@
 				subwayCode *= 1;
 				
 				var preSubwayCode = subwayCode-1;
-				preSubwayCode = "0"+preSubwayCode;
-				
 				var nextSubwayCode = subwayCode+1;
-				nextSubwayCode = "0"+nextSubwayCode;
-				
-				subwayCode = "0"+subwayCode;
+				if(subwayCode.length <4){
+					preSubwayCode = "0"+preSubwayCode;
+					nextSubwayCode = "0"+nextSubwayCode;
+					subwayCode = "0"+subwayCode;
+				}
 				
 				var now = new Date();
 				if(now.getDay() == 0){
@@ -418,7 +416,7 @@
 				} else {
 					day = "1";
 				}
-				console.log("사용자 지하철 요청 데이터 설정");
+				console.log("사용자 지하철 요청 데이터 설정"+subwayCode+":"+day);
 				subway_task.ascending(subwayCode,day);
 				subway_task.descending(subwayCode,day);
 				subway_task.preSubwayCodefunc(preSubwayCode,day);

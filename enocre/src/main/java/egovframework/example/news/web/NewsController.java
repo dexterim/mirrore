@@ -24,8 +24,8 @@ public class NewsController {
     
 	public StringBuilder makeNews(){
 		 
-        String clientId = "sM3ppoIQEVPdEN8YUi2V";
-        String clientSecret = "vwQynryeHG";
+		 String clientId = "sM3ppoIQEVPdEN8YUi2V";
+		    String clientSecret = "Um9vhmD81I";
         int display = 5;
         
         try {
@@ -74,7 +74,7 @@ public class NewsController {
 //                	pubData[k] = array[i + 2];
 //               
 //            }
-//            System.out.println(sb);
+           System.out.println(sb);
             System.out.println("----------------------------");
 //            System.out.println("첫번째 타이틀 : " + title[0]);
 //            System.out.println("두번째 타이틀 : " + title[1]);

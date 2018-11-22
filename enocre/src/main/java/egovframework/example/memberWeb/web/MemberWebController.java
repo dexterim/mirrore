@@ -275,7 +275,7 @@ public class MemberWebController {
 			
 			member_key = (String)hashMap.get("member_key");
 			member_value_en = (String)hashMap.get("member_value_en");
-			member_value = (String)hashMap.get("member_value_en");
+			member_value = (String)hashMap.get("member_value");
 			member_id = (String)hashMap.get("member_id");
 			
 			System.out.println("update_column : "+member_key);
