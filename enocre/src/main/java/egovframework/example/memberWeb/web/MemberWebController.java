@@ -218,6 +218,7 @@ public class MemberWebController {
 		System.out.println("미러 아이디: "+mirror_id);
 		System.out.println("로그아웃: "+key_skill);
 		
+		resultStr = "success";
 			
 		response.setCharacterEncoding("utf-8");
 		
