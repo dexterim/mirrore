@@ -79,7 +79,7 @@ public class MemoWebController {
 			member_id = hashMap.get("member_id").toString();
 			
 			if(!mirror_id.equals("")){
-				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				String member_check = nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
 				System.out.println("member_check:"+member_check);
 				if(member_id.equals(member_check)){
 					result= "validated_user";

@@ -95,6 +95,8 @@
         //output.appendChild(pre);
         if(message == "java_client") {
         	setting.enableSetting();
+        } else if(message = "init_motion"){
+        	alarmGame.init();
         } else if(message == "logout") {
         	console.log("logout");
         	logout.enableLogoutSetting();
@@ -132,7 +134,7 @@
     		tilesSpeech.tilesSpeechFunc(speakStr);
     		
         } else if(message.indexOf("memo_update") != -1) {
-            var message_id = message.slice(13, message.length);
+            var message_id = message.slice(12, message.length);
             selectMemo.showMemo(message_id);
             
         }
@@ -178,7 +180,6 @@
     							}
     							var message_subway_loc = item.subwayLoc;
     							console.log("subway_loc: "+message_subway_loc);
-    							
     							subway_task.getSubway(message_subway_loc);
     							
     							if(updateType == "login") {
@@ -196,7 +197,7 @@
     								
     							} else if((updateType == "update_member_subway_loc")) {
     								
-    								console.log("subway_loc: "+message_subway_loc);	
+    								
     							}
     							
    						});
@@ -394,51 +395,198 @@
     
     var subway_task = {
 			getSubway : function(subway_loc) {
-				var train_day = new Date();
-				train_day = train_day.getDay();
+				var subwayCode = subway_loc;
+				subwayCode *= 1;
 				
-				if(train_day == 0) {
-					train_day="3";
-				} else if(train_day == 6) {
-					train_day="2";
+				var preSubwayCode = subwayCode-1;
+				preSubwayCode = "0"+preSubwayCode;
+				
+				var nextSubwayCode = subwayCode+1;
+				nextSubwayCode = "0"+nextSubwayCode;
+				
+				subwayCode = "0"+subwayCode;
+				
+				var now = new Date();
+				if(now.getDay() == 0){
+					day = "3";
 				} else {
-					train_day="1";
+					day = "1";
 				}
-				console.log("url 위~~~~~",subway_url);
-				for(i=1;i<3;i++){
-				var subway_url = "http://openapi.seoul.go.kr:8088/515047645379616e39385a67724e65/json/SearchArrivalInfoByIDService/1/2/"+subway_loc+"/"+i+"/"+train_day;
-					/* if(i=1){
-						
-					}
-					else{
-						
-					} */
-				}
-				
-				console.log(subway_url);
-				
-				
-    	         /* $.ajax({
-    	               type:"GET",
-    	               url:subway_url,
-    	               success:function(json){
-    	                  var json_string = JSON.stringify(json);
-    	                  console.log("subway_json_string: "+json_string)
-    	                   var list = JSON.parse(json);
-    	                   console.log(list[''])
-    	                   
-    	                   console.log('subway_contentStr'+contentStr);
-    	                   $("#ascending_subway").append(json);
-    	                   $("#descending_subway").append(contentStr);
-    	                   console.log("url~~~~: ",subway_url);
-    	                   console.log("subway_loc~~~ : ",subway_loc);
-    	               }
-    	           
-    	           }); */
-    	      }
+				subway_task.ascending(subwayCode,day);
+				subway_task.descending(subwayCode,day);
+				subway_task.preSubwayCodefunc(preSubwayCode,day);
+				subway_task.nextSubwayCodefunc(nextSubwayCode,day);
+			},
+    		ascending : function(subwayCode,day) {
+    			$.ajax({
+    				url : "http://openAPI.seoul.go.kr:8088/744c6b546a79616e37334d46797069/xml/SearchArrivalTimeOfLine2SubwayByIDService/1/1/"+subwayCode+"/1/"+day+"/",	
+    				dataType : "xml",
+    				success : function(data) {
+    					var $data = $(data).find("SearchArrivalTimeOfLine2SubwayByIDService>row");
+    					//데이터를 테이블 구조에 저장. html의 table태그, class는 table로 하여 부트스트랩 적용
+    					if ($data.length > 0) {
+    						$.each($data, function(i, o) {
+
+    							//오픈 API에 정의된 변수와 내가 정의한 변수 데이터 파싱
+    							var $STATION_CD = $(o).find("STATION_CD").text(); // 선택 역 코드
+    							var $SUBWAYNAME = $(o).find("SUBWAYNAME").text(); // 선택 역 명
+    							var $LEFTTIME = $(o).find("LEFTTIME").text(); //출발 시간
+    							var $DESTSTATION_NAME = $(o).find("DESTSTATION_NAME").text();// 도착 역 명
+    							
+    							console.log("STATION_CD 선택역코드 : "+ $STATION_CD +"\n");
+    							console.log("SUBWAYNAME 역이름 : "+ $SUBWAYNAME+"\n");
+    							console.log( $DESTSTATION_NAME +"행");
+    							console.log("LEFTTIME 출발시간 : "+ $LEFTTIME+"\n");
+    							
+    							$("#subway_loc").html($SUBWAYNAME);		
+    							$("#ascending_subway").html($DESTSTATION_NAME+"행\n"+$LEFTTIME);
+
+    						});// end of each 
+    					}
+    				},
+    				//에러 발생시 
+    				error : function() {
+    					alert("에러~");
+    				}
+    			});
+    		},
+    		descending : function(subwayCode,day){
+    			$.ajax({
+    				url : "http://openAPI.seoul.go.kr:8088/744c6b546a79616e37334d46797069/xml/SearchArrivalTimeOfLine2SubwayByIDService/1/1/"+subwayCode+"/2/"+day+"/",	
+    				
+    				dataType : "xml",
+    				success : function(data) {
+    					var $data = $(data)
+    							.find("SearchArrivalTimeOfLine2SubwayByIDService>row");
+    					//데이터를 테이블 구조에 저장. html의 table태그, class는 table로 하여 부트스트랩 적용
+    					if ($data.length > 0) {
+    						$.each($data, function(i, o) {
+
+    							//오픈 API에 정의된 변수와 내가 정의한 변수 데이터 파싱
+    							var $STATION_CD = $(o).find("STATION_CD").text(); // 선택 역 코드
+    							var $SUBWAYNAME = $(o).find("SUBWAYNAME").text(); // 선택 역 명
+    							var $LEFTTIME = $(o).find("LEFTTIME").text(); //출발 시간
+    							var $DESTSTATION_NAME = $(o).find("DESTSTATION_NAME").text();// 도착 역 명
+    							
+    							console.log("STATION_CD 선택역코드 : "+ $STATION_CD +"\n");
+    							console.log("SUBWAYNAME 역이름 : "+ $SUBWAYNAME+"\n");
+    							console.log( $DESTSTATION_NAME +"행");
+    							console.log("LEFTTIME 출발시간 : "+ $LEFTTIME+"\n");
+    							
+    							//document.getElementById("subway_loc").innerHTML=$SUBWAYNAME;		
+    							$("#descending_subway").html($DESTSTATION_NAME+"행\n"+$LEFTTIME);
+    							
+
+    						});// end of each 
+    					}
+    				},
+    				//에러 발생시 
+    				error : function() {
+    					alert("에러~");
+    				}
+    			});
+    		},
+    		preSubwayCodefunc : function(preSubwayCode,day) {
+    			$.ajax({
+    				url : "http://openAPI.seoul.go.kr:8088/744c6b546a79616e37334d46797069/xml/SearchArrivalTimeOfLine2SubwayByIDService/1/1/"+preSubwayCode+"/1/"+day+"/",	
+    				
+    				dataType : "xml",
+    				success : function(data) {
+    					var $data = $(data)
+    							.find("SearchArrivalTimeOfLine2SubwayByIDService>row");
+    					//데이터를 테이블 구조에 저장. html의 table태그, class는 table로 하여 부트스트랩 적용
+    					if ($data.length > 0) {
+    						$.each($data, function(i, o) {
+
+    							//오픈 API에 정의된 변수와 내가 정의한 변수 데이터 파싱
+    							var $SUBWAYNAME = $(o).find("SUBWAYNAME").text(); // 선택 역 명
+    							
+    							console.log("SUBWAYNAME 역이름 : "+ $SUBWAYNAME+"\n");
+    							
+    							//document.getElementById("subway_loc").innerHTML=$SUBWAYNAME;		
+    							$("#pre_subway_loc").html($SUBWAYNAME);
+    								
+
+    						});// end of each 
+    					}
+    				},
+    				//에러 발생시 
+    				error : function() {
+    					alert("에러~");
+    				}
+    			});
+    		},
+    		nextSubwayCodefunc :function(nextSubwayCode,day) {
+    			$.ajax({
+    				url : "http://openAPI.seoul.go.kr:8088/744c6b546a79616e37334d46797069/xml/SearchArrivalTimeOfLine2SubwayByIDService/1/1/"+nextSubwayCode+"/1/"+day+"/",	
+    				
+    				dataType : "xml",
+    				success : function(data) {
+    					var $data = $(data)
+    							.find("SearchArrivalTimeOfLine2SubwayByIDService>row");
+    					//데이터를 테이블 구조에 저장. html의 table태그, class는 table로 하여 부트스트랩 적용
+    					if ($data.length > 0) {
+    						
+    						$.each($data, function(i, o) {
+
+    							//오픈 API에 정의된 변수와 내가 정의한 변수 데이터 파싱
+    							var $SUBWAYNAME = $(o).find("SUBWAYNAME").text(); // 선택 역 명
+    							
+    							//<tbody><tr><td>태그안에 파싱하여 추출된 데이터 넣기
+    							
+    							console.log("SUBWAYNAME 역이름 : "+ $SUBWAYNAME+"\n");
+    							
+    							//document.getElementById("subway_loc").innerHTML=$SUBWAYNAME;		
+    							$("#next_subway_loc").html($SUBWAYNAME);
+    								
+
+    						});// end of each 
+    					}
+    				},
+    				//에러 발생시 
+    				error : function() {
+    					alert("에러~");
+    				}
+    			});
+    		}
+			
     	}
     
-    
+    var alarmGame = {
+    		init : function(){
+	    		//요소 생성 부분
+	    		var motionsLength = 3;
+	    		var motions = new Array("down", "up", "left", "right");
+	    		var correctMotion = new Array(null, null, null);
+	
+	    		for (var i = 0; i<correctMotion.length; i++) {
+	    			correctMotion[i] = alarmGame.randomItem(motions);
+	    			$("#alarmGame").append("<div class='alarmGame'>"+correctMotion[i]+"</div>");
+	    		}
+    		},
+    		ramdomItem : function(motionText){
+    			return motionText[Math.floor(Math.random() * motionText.length)];
+    		},
+    //게임 부분
+    //nowPosition의 값이 0에서 부터 2가되기 전까지 돌아 간다!!!!!!!!
+    		 isCorrectMotion : function(myMotion) {
+    			 var nowPostion = 0;
+    			 var correctMotionArray = $(".alarmGame").val();
+    			 var correctMotion = jQuery.makeArray(correctMotionArray);
+    			 console.log('arr'+arr);
+    			 
+    			if (myMotion == correctMotion[nowPosition]) {
+    				nowPosition++;// final 변수에 
+
+    				$("#alarmGame").append('정답!<br />');
+    				//nowPosition번재에 해당하는 이미지를 삭제하는 문구 추가
+    				//..
+    			} else {
+    				//모션 재입력 문구 
+    				$("#alarmGame").append('삐! 모션이 틀렸습니다! 다시 해보세요<br />');
+    			}
+    		}
+    }
     var tilesSpeech = {
     		tilesSpeechFunc : function(str) {
     		   
@@ -483,4 +631,5 @@
     		
     		}
     }
+    
     </script>

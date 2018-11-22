@@ -28,9 +28,45 @@ import egovframework.example.webSocket.web.WebSocket;
 public class AlarmWebController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@RequestMapping("initAlarm.do")
+	public void initAlarmWeb(@RequestBody String reqParam,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception{
+		
+			String mirror_id, result = "";
+			Map<String,Object> hashMap;
+			hashMap = JsonUtil.JsonToMap(reqParam);
+			
+			mirror_id = hashMap.get("mirror_id").toString();
+			
+			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+			result = nfcLogin.nfcCheck(mirror_id);
+			
+			if(result.equals("validated_user")){
+				try{		
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					ws.sendText("init_motion");
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				} finally {
+					log.info("alarm_init.do");
+				}
+			}
+						
+			response.setCharacterEncoding("utf-8");
+			
+			PrintWriter print = response.getWriter();
+			print.print(result);
+			print.flush();
+	}
 
 	@RequestMapping("alarmWeb.do")
-	public void initAlarmWeb(@RequestBody String reqParam,
+	public void initMotionWeb(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		

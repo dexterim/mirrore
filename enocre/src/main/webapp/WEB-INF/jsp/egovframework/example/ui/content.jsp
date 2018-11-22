@@ -62,6 +62,7 @@
 								        <div id="output"></div>
 								        <div id="voice"></div>
 									</div>
+									<div id="alarmGame"></div>
 								</div>
 						     </div>
 						   </div>
