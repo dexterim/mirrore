@@ -39,16 +39,27 @@ public class AlarmWebController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		
-			String mirror_id, result = "";
+			String member_id, mirror_id, result = "";
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
+			member_id = hashMap.get("member_id").toString();
 			mirror_id = hashMap.get("mirror_id").toString();
+			System.out.println("mirror_id:"+mirror_id);
 			
-			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-			result = nfcLogin.nfcCheck(mirror_id);
+			
+			if(!mirror_id.equals("")){
+				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				System.out.println("member_check:"+member_check);
+				if(member_id.equals(member_check)){
+					result= "validated_user";
+				}
+			}else{
+				result="invalidate_session";
+			}
 			
 			if(result.equals("validated_user")){
+				
 				try{		
 					com.neovisionaries.ws.client.WebSocket ws = connect();
 					ws.sendText("init_motion");

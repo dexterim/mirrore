@@ -404,7 +404,7 @@
 				
 				var preSubwayCode = subwayCode-1;
 				var nextSubwayCode = subwayCode+1;
-				if(subwayCode.length <4){
+				if(subwayCode <1000){
 					preSubwayCode = "0"+preSubwayCode;
 					nextSubwayCode = "0"+nextSubwayCode;
 					subwayCode = "0"+subwayCode;
