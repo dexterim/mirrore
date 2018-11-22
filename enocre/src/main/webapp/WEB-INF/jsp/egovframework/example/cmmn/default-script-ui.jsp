@@ -112,7 +112,7 @@
             if(message_login == "mirror_login") {
             	console.log("login된 아이디: "+message_id);
             	userId = message_id;
-            	memberInfo.getMemberInfo("login", userId);
+            	memberInfo.getMemberInfo(message_login, userId);
             }
         } else if(message.indexOf("update_member") != -1) {
         	console.log("member data 변경");
@@ -158,6 +158,7 @@
     					var jobj_parse = JSON.parse(data);
     					if(jobj_parse.result === "success") {
     						var json_member = jobj_parse.memberInfoList;
+    						console.log(json_member);
     						$.each(json_member, function(i, item) {
     							var message_name = item.name;
     							
@@ -183,10 +184,12 @@
     							}
     							var message_subway_loc = item.subwayLoc;
     							
-    							if(updateType.indexOf("mirror_login")!=-1) {
+    							if(updateType == "mirror_login") {
     								welcomeUser.sayHello(message_name);
     								//사용자 메모 데이터
+    								console.log("사용자 메모 요청 :"+userId);
     								selectMemo.showMemo(userId);
+    								console.log("사용자 지하철 요청 :"+message_subway_loc);
     								subway_task.getSubway(message_subway_loc);
         			            	setTimeout(function() { 
         			            		setting.enableSetting();
@@ -197,7 +200,7 @@
     								get_weather_api.myWeather(message_weather_loc);
     								setting.enableSetting();
     								
-    							}else if((updateType.indexOf("subway_loc")!=-1)) {
+    							}else if(updateType.indexOf("subway_loc")!=-1) {
     								console.log("subway_loc: "+message_subway_loc);
         							subway_task.getSubway(message_subway_loc);
     							}
@@ -397,6 +400,7 @@
     
     var subway_task = {
 			getSubway : function(subway_loc) {
+				console.log("사용자 지하철 요청 세부"+subway_loc);
 				var subwayCode = subway_loc;
 				subwayCode *= 1;
 				
@@ -414,6 +418,7 @@
 				} else {
 					day = "1";
 				}
+				console.log("사용자 지하철 요청 데이터 설정");
 				subway_task.ascending(subwayCode,day);
 				subway_task.descending(subwayCode,day);
 				subway_task.preSubwayCodefunc(preSubwayCode,day);
