@@ -132,7 +132,9 @@ public class EnocreWebController {
 		System.out.println("update_setting_mirror_id:"+mirror_id);
 		
 		if(!mirror_id.equals("")){
-			if(mirror_id.equals(nfcMirrorLoginService.selectMirrorLoginCheck(setting_id))){
+			String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(setting_id);
+			System.out.println("member_check:"+member_check);
+			if(setting_id.equals(member_check)){
 				result= "validated_user";
 			}
 		}
