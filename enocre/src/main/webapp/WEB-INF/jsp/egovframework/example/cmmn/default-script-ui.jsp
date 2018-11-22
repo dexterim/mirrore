@@ -93,13 +93,13 @@
         pre.style.wordWrap = "break-word";
         pre.innerHTML = message;
         //output.appendChild(pre);
-        if(message == "java_client") {
+        if(message.indexOf("java_client") != -1) {
         	setting.enableSetting();
         } else if(message.indexOf("update_member") != -1){
         	console.log("alarm_motion:"+message);
-        } else if(message == "init_motion"){
+        } else if(message.indexOf("init_motion") != -1){
         	alarmGame.init();
-        } else if(message == "logout") {
+        } else if(message.indexOf("logout") != -1) {
         	console.log("logout");
         	logout.enableLogoutSetting();
         } else if(message.indexOf("mirror_login") != -1) {
@@ -181,10 +181,8 @@
     								
     							}
     							var message_subway_loc = item.subwayLoc;
-    							console.log("subway_loc: "+message_subway_loc);
-    							subway_task.getSubway(message_subway_loc);
     							
-    							if(updateType == "login") {
+    							if(updateType.indexOf("mirror_login")!=-1) {
     								welcomeUser.sayHello(message_name);
     								//사용자 메모 데이터
     								selectMemo.showMemo(userId);
@@ -192,14 +190,14 @@
         			            		setting.enableSetting();
         			            		}, 2000);
         			           
-    							} else if(updateType == "update_member_weather_loc") {
+    							} else if(updateType.indexOf("weather_loc") != -1) {
     								
     								get_weather_api.myWeather(message_weather_loc);
     								setting.enableSetting();
     								
-    							} else if((updateType == "update_member_subway_loc")) {
-    								
-    								
+    							} else if((updateType.indexOf("subway_loc")!=-1)) {
+    								console.log("subway_loc: "+message_subway_loc);
+        							subway_task.getSubway(message_subway_loc);
     							}
     							
    						});

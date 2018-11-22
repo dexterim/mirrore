@@ -136,7 +136,11 @@ public class EnocreWebController {
 			System.out.println("member_check:"+member_check);
 			if(setting_id.equals(member_check)){
 				result= "validated_user";
+			}else {
+				result="invalidate_session";
 			}
+		} else {
+			result="invalidate_session";
 		}
 		System.out.println("result:"+result);
 		if(result.equals("validated_user")){
