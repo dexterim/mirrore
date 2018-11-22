@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
 import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.WebSocket;
 
@@ -28,13 +30,16 @@ import egovframework.example.webSocket.web.WebSocket;
 public class SpeakWebController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
 
 	@RequestMapping("speakWeb.do")
 	public void initSpeakWeb(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		
-			String speakText, mirror_id ,result = null;
+			String speakText, member_id, mirror_id ,result = null;
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
@@ -42,9 +47,17 @@ public class SpeakWebController {
 			System.out.println("음성 인식 텍스트 : " + speakText);
 			
 			mirror_id = hashMap.get("mirror_id").toString();
+			member_id = hashMap.get("member_id").toString();
 			
-			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-			result = nfcLogin.nfcCheck(mirror_id);
+			if(!mirror_id.equals("")){
+				String member_check =nfcMirrorLoginService.selectMirrorLoginCheck(member_id);
+				System.out.println("member_check:"+member_check);
+				if(member_id.equals(member_check)){
+					result= "validated_user";
+				}
+			}else{
+				result="invalidate_session";
+			}
 			
 			if(result.equals("validated_user")){
 			

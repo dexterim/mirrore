@@ -114,6 +114,7 @@
         	console.log("member data 변경");
             
         	if(message.indexOf("update_member_weather_loc") != -1) {
+        		
         		console.log("update_member_weather_loc 변경");
         		var message_id = message.slice(0, message.length-26);
         		userId = message_id;
@@ -417,7 +418,7 @@
 				console.log(subway_url);
 				
 				
-    	         $.ajax({
+    	         /* $.ajax({
     	               type:"GET",
     	               url:subway_url,
     	               success:function(json){
@@ -433,7 +434,7 @@
     	                   console.log("subway_loc~~~ : ",subway_loc);
     	               }
     	           
-    	           });
+    	           }); */
     	      }
     	}
     

@@ -86,6 +86,7 @@
 								                
 								                myWeather = resp.weather[0].main.toLowerCase();
 								                console.log("myWeather1:"+myWeather);
+								                $('#myWeatherNowIcon').removeAttr('class');
 								                getWeatherIcon(myWeather);
 								            }
 								        })
@@ -162,7 +163,7 @@
 									}
 								console.log(weathers+"weathers");
 								console.log(weathers[myWeather]+"두번째");
-								$('#myWeatherNowIcon').addClass(weathers[myWeather]);
+								$('#myWeatherNowIcon').attr('class','tilesWatch wi '+ weathers[myWeather]);
 								}
 							</script>
 						  </div>
