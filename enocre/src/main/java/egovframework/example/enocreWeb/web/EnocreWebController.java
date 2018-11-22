@@ -108,6 +108,7 @@ public class EnocreWebController {
 		}
 		
 		mirror_id = hashMap.get("mirror_id").toString();
+		System.out.println("update_setting_mirror_id:"+mirror_id);
 		
 		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
 		result = nfcLogin.nfcCheck(mirror_id);
