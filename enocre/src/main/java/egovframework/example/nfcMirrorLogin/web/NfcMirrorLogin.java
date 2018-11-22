@@ -78,17 +78,15 @@ public class NfcMirrorLogin{
 			
 		
 	}
-	public String nfcCheck(String mirror_id){
+	public String nfcCheck(String setting_id){
 		String mirror_login_user = "", resultStr ="";
 		try {
-			if(nfcMirrorLoginService.selectMirrorLoginCheck()!=null) {
-				mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
-				System.out.println("mirrod_id_check_user :"+mirror_login_user);
-				if(mirror_id.equals(mirror_login_user) && mirror_id != null && mirror_id.equals("")){
-					resultStr = "validated_user";
-				}else{
-					resultStr = "invalidate_session";
-				}
+			mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
+			System.out.println("mirrod_id_check_user :"+mirror_login_user);
+			if(setting_id.equals(mirror_login_user) && setting_id != null && !setting_id.equals("")){
+				resultStr = "validated_user";
+			}else{
+				resultStr = "invalidate_session";
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

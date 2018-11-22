@@ -4,7 +4,7 @@ import java.util.Map;
 
 public interface NfcMirrorLoginService {
 		//update
-		void updateMemberMirror(Map<String, Object> hashMap) throws Exception;
+		public void updateMemberMirror(Map<String, Object> hashMap) throws Exception;
 		//select
-		String selectMirrorLoginCheck() throws Exception;
+		public String selectMirrorLoginCheck() throws Exception;
 }

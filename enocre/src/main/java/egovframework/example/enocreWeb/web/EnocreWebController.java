@@ -89,7 +89,7 @@ public class EnocreWebController {
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
 		
-		String setting_key, setting_value, setting_id, mirror_id, result = "";
+		String setting_key, setting_value, setting_id, mirror_id = "", result = "";
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
@@ -111,7 +111,9 @@ public class EnocreWebController {
 		System.out.println("update_setting_mirror_id:"+mirror_id);
 		
 		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
-		result = nfcLogin.nfcCheck(mirror_id);
+		if(!mirror_id.equals("")){
+			result = nfcLogin.nfcCheck(setting_id);
+		}
 		
 		if(result.equals("validated_user")){
 		
