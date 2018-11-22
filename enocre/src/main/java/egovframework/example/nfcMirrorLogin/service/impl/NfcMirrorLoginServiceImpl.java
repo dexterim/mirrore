@@ -27,6 +27,13 @@ public class NfcMirrorLoginServiceImpl implements NfcMirrorLoginService {
 		// TODO Auto-generated method stub
 		return nfcMirrorLoginMapper.selectMirrorLoginCheck();
 	}
+
+
+	@Override
+	public String selectMirrorLoginCheck(String setting_id) throws Exception {
+		// TODO Auto-generated method stub
+		return nfcMirrorLoginMapper.selectMirrorLoginCheck(setting_id);
+	}
 	
 	
 }

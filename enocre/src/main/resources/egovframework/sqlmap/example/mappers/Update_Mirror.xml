@@ -2,9 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="egovframework.example.nfcMirrorLogin.service.impl.NfcMirrorLoginMapper">
 	
-	<select id="selectMirrorLoginCheck" resultType="String">
+	<select id="selectMirrorLoginCheck" parameterType="String" resultType="String">
 		SELECT MEMBER_ID FROM SETTING
-		WHERE NOW_CONDITION = 1;
+		<where>
+			AND NOW_CONDITION = 1
+			<if test='_parameter != null and _parameter != ""'>
+				AND MEMBER_ID = #{_parameter}	
+			</if>
+		</where>;
 	</select>
 	
 	<update id="updateMemberMirror" parameterType="map">

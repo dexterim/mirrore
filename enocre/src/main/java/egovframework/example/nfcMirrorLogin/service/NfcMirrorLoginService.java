@@ -7,4 +7,5 @@ public interface NfcMirrorLoginService {
 		public void updateMemberMirror(Map<String, Object> hashMap) throws Exception;
 		//select
 		public String selectMirrorLoginCheck() throws Exception;
+		public String selectMirrorLoginCheck(String setting_id) throws Exception;
 }

@@ -81,7 +81,7 @@ public class NfcMirrorLogin{
 	public String nfcCheck(String setting_id){
 		String mirror_login_user = "", resultStr ="";
 		try {
-			mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
+			mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck(setting_id);
 			System.out.println("mirrod_id_check_user :"+mirror_login_user);
 			if(setting_id.equals(mirror_login_user) && setting_id != null && !setting_id.equals("")){
 				resultStr = "validated_user";
