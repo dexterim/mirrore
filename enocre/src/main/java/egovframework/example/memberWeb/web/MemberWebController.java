@@ -22,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memberWeb.service.MemberWebService;
 import egovframework.example.memberWeb.service.SessionVO;
+import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.MyHandler;
 import egovframework.example.webSocket.web.WebSocket;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
@@ -159,18 +160,7 @@ public class MemberWebController {
 				String userId = memberList.get(0).get("id").toString();
 				String userName = memberList.get(0).get("name").toString();
 				System.out.println("member_Id : "+userId);
-				try{		
-					com.neovisionaries.ws.client.WebSocket ws = connect();
-					ws.sendText(userId+" login");
-				} catch (ArrayIndexOutOfBoundsException ae) {
-					log.info("array 오류가 발생했습니다."+ae);
-				} catch (NullPointerException ne) {
-					log.info("null 오류가 발생했습니다."+ne);
-				} catch (Exception e) {
-					log.info("그 외 오류가 발생했습니다."+e);
-				} finally {
-					log.info("login.do");
-				}
+				
 			}
 			response.setCharacterEncoding("utf-8");
 			
@@ -227,27 +217,16 @@ public class MemberWebController {
 		key_skill = (String)hashMap.get("key_skill");
 		System.out.println("미러 아이디: "+mirror_id);
 		System.out.println("로그아웃: "+key_skill);
-		try{		
-			com.neovisionaries.ws.client.WebSocket ws = connect();
-			ws.sendText("logout_"+mirror_id);
-			resultStr = "success";
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
+		
 			
-			response.setCharacterEncoding("utf-8");
-			
-			PrintWriter print = response.getWriter();
-			
-			print.print(resultStr);
-			print.flush();
-			
-			log.info("logout.do");
-		}
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		
+		print.print(resultStr);
+		print.flush();
+		
+		log.info("logout.do");
 	}
 	
 	@RequestMapping(value = "setting.do")
@@ -279,63 +258,60 @@ public class MemberWebController {
 	}
 	@RequestMapping("update_member.do")
 	public void updateMember(
+			@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
-		try{
-			String member_key, member_value_en, member_value, member_id, resultStr = null;
-			member_key = request.getParameter("member_key");
-			member_value_en = request.getParameter("member_value_en");
-			member_value = request.getParameter("member_value");
-			member_id = request.getParameter("member_id");
+		
+			String member_key, member_value_en, member_value, member_id, mirror_id, result = null;
+			Map<String,Object> hashMap;
+			hashMap = JsonUtil.JsonToMap(reqParam);
+			
+			member_key = (String)hashMap.get("member_key");
+			member_value_en = (String)hashMap.get("member_value_en");
+			member_value = (String)hashMap.get("member_value_en");
+			member_id = (String)hashMap.get("member_id");
 			
 			System.out.println("update_column : "+member_key);
 			System.out.println("update_value_en : "+member_value_en);
 			System.out.println("update_value : "+member_value);
 			System.out.println("update_id : "+member_id);
-			
-			HashMap<String,Object> hashMap = new HashMap<String,Object>();
-			hashMap.put("member_key", member_key);
-			hashMap.put("member_value", member_value);
-			hashMap.put("member_id", member_id);
-			
-			memberWebService.updateMember(hashMap);
-			
-			try{	
-				com.neovisionaries.ws.client.WebSocket ws = connect();
-				if(member_key.equals("weather_loc")) {
-					System.out.println("weather 변경");
-					ws.sendText(member_id+" update_member_weather_loc");
 					
-				}else if(member_key.equals("subway_loc")) {
-					System.out.println("subway_loc 변경");
-					ws.sendText(member_id+" update_member_subway_loc");
-				}
+			memberWebService.updateMember(hashMap);
+			mirror_id = hashMap.get("mirror_id").toString();
+			
+			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+			result = nfcLogin.nfcCheck(mirror_id);
+			
+			if(result.equals("validated_user")){
 				
-				resultStr = "success";
-			} catch (ArrayIndexOutOfBoundsException ae) {
-				log.info("array 오류가 발생했습니다."+ae);
-			} catch (NullPointerException ne) {
-				log.info("null 오류가 발생했습니다."+ne);
-			} catch (Exception e) {
-				log.info("그 외 오류가 발생했습니다."+e);
+				try{	
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					if(member_key.equals("weather_loc")) {
+						System.out.println("weather 변경");
+						ws.sendText(member_id+" update_member_weather_loc");
+						
+					}else if(member_key.equals("subway_loc")) {
+						System.out.println("subway_loc 변경");
+						ws.sendText(member_id+" update_member_subway_loc");
+					}
+					
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				}
 			}
 			
 			response.setCharacterEncoding("utf-8");
 			
 			PrintWriter print = response.getWriter();
-			print.print(resultStr);
+			print.print(result);
 			print.flush();
-			
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
+	
 			log.debug("MemberWebController입니다.");
-		}
 		
 	}
 	

@@ -40,9 +40,10 @@ public class NfcMirrorLogin{
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		
-			String resultStr;
+			String resultStr="";
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
+			
 			HashMap<String,Object> hashMap_mirror = new HashMap<String,Object>();
 			hashMap_mirror.put("setting_key", "now_condition");
 			hashMap_mirror.put("setting_id", hashMap.get("id"));
@@ -77,8 +78,21 @@ public class NfcMirrorLogin{
 			
 		
 	}
-	public void nfcCheck(HttpServletRequest request){
-		String mirror_id = request.getParameter("mirror_id");
+	public String nfcCheck(String mirror_id){
+		String mirror_login_user, resultStr ="";
+		try {
+			mirror_login_user = nfcMirrorLoginService.selectMirrorLoginCheck();
+			if(mirror_id.equals(mirror_login_user)){
+				resultStr = "validated_user";
+			}else{
+				resultStr = "invalidate_session";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultStr;
+		 
 	}
 	
 	public static com.neovisionaries.ws.client.WebSocket connect() throws Exception

@@ -25,6 +25,8 @@ import com.neovisionaries.ws.client.WebSocketExtension;
 
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.enocreWeb.service.EnocreWebService;
+import egovframework.example.nfcMirrorLogin.service.NfcMirrorLoginService;
+import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.MyHandler;
 import egovframework.example.webSocket.web.WebSocket;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
@@ -36,6 +38,9 @@ public class EnocreWebController {
 	
 	@Resource(name="enocreWebService")
 	private EnocreWebService enocreWebService;
+	
+	@Resource(name="nfcMirrorLoginService")
+	private NfcMirrorLoginService nfcMirrorLoginService;
 
 	@RequestMapping("android.do") 
 	public void androidTest(HttpServletRequest request) { 
@@ -84,7 +89,7 @@ public class EnocreWebController {
 			HttpServletResponse response,
 			ModelMap model) throws Exception{
 		
-		String setting_key, setting_value, setting_id, resultStr = null;
+		String setting_key, setting_value, setting_id, mirror_id, result = null;
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
@@ -98,82 +103,59 @@ public class EnocreWebController {
 		
 		if(setting_value.equals("1")) {
 			enocreWebService.updateOnSetting(hashMap);
-			switch(setting_key) {
-			case "watch":
-				model.addAttribute("tilesWatch", 1);
-				break;
-			case "memo":
-				System.out.println("memo on");
-				model.addAttribute("tilesMemo", 1);
-				break;
-			case "calendar":
-				System.out.println("calendar on");
-				model.addAttribute("tilesCalendar", 1);
-				break;	
-			case "subway":
-				System.out.println("subway on");
-				model.addAttribute("tilesSubway", 1);
-				break;
-			case "news":
-				System.out.println("news on");
-				model.addAttribute("tilesNews", 1);
-				break;
-			}
-			resultStr = "success";
 		} else {
 			enocreWebService.updateOffSetting(hashMap);
-			switch(setting_key) {
-			case "watch":
-				model.addAttribute("tilesWatch", 0);
-				break;
-			case "memo":
-				System.out.println("memo off");
-				model.addAttribute("tilesMemo", 0);
-				break;
-			case "calendar":
-				System.out.println("calendar off");
-				model.addAttribute("tilesCalendar", 0);
-				break;	
-			case "subway":
-				System.out.println("subway off");
-				model.addAttribute("tilesSubway", 0);
-				break;
-			case "news":
-				System.out.println("news off");
-				model.addAttribute("tilesNews", 0);
-				break;
-			}
-			resultStr = "success";
 		}
-		try{			
-			com.neovisionaries.ws.client.WebSocket ws = connect();
-			ws.sendText("java_client");
-			
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
-			
+		
+		mirror_id = hashMap.get("mirror_id").toString();
+		
+		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+		result = nfcLogin.nfcCheck(mirror_id);
+		
+		if(result.equals("validated_user")){
+		
+			try{			
+				com.neovisionaries.ws.client.WebSocket ws = connect();
+				ws.sendText("java_client");
+				
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				log.info("array 오류가 발생했습니다."+ae);
+			} catch (NullPointerException ne) {
+				log.info("null 오류가 발생했습니다."+ne);
+			} catch (Exception e) {
+				log.info("그 외 오류가 발생했습니다."+e);
+			} finally {
+				switch(setting_key) {
+				case "watch":
+					model.addAttribute("tilesWatch", setting_value);
+					break;
+				case "memo":
+					System.out.println("memo on");
+					model.addAttribute("tilesMemo", setting_value);
+					break;
+				case "calendar":
+					System.out.println("calendar on");
+					model.addAttribute("tilesCalendar", setting_value);
+					break;	
+				case "subway":
+					System.out.println("subway on");
+					model.addAttribute("tilesSubway", setting_value);
+					break;
+				case "news":
+					System.out.println("news on");
+					model.addAttribute("tilesNews", setting_value);
+					break;
+				}
+			}
 		}
 		response.setCharacterEncoding("utf-8");
 		
 		PrintWriter print = response.getWriter();
-		print.print(resultStr);
+		print.print(result);
 		print.flush();
 		
 		log.debug("EnocreWebController_update_setting_success");
 		
-		
-		
-//		String url = "enocreWeb.do";
-		//response.sendRedirect(url);
-		/*RefreshController refreshController = new RefreshController();
-		refreshController.refresh("success_calling_RefreshController", model);*/
-		
-//		initEnocreWeb(request,response,model);
 	}
 	private static com.neovisionaries.ws.client.WebSocket connect() throws Exception
     {

@@ -21,6 +21,7 @@ import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
+import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.WebSocket;
 
 @Controller
@@ -32,42 +33,39 @@ public class SpeakWebController {
 	public void initSpeakWeb(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
-		try{
-			String speakText,resultStr = null;
+		
+			String speakText, mirror_id ,result = null;
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
 			speakText = hashMap.get("text").toString();
 			System.out.println("음성 인식 텍스트 : " + speakText);
 			
-			try{	
-				com.neovisionaries.ws.client.WebSocket ws = connect();
-				ws.sendText("speakText:"+speakText);
-				
-				resultStr = "success";
-			} catch (ArrayIndexOutOfBoundsException ae) {
-				log.info("array 오류가 발생했습니다."+ae);
-			} catch (NullPointerException ne) {
-				log.info("null 오류가 발생했습니다."+ne);
-			} catch (Exception e) {
-				log.info("그 외 오류가 발생했습니다."+e);
+			mirror_id = hashMap.get("mirror_id").toString();
+			
+			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+			result = nfcLogin.nfcCheck(mirror_id);
+			
+			if(result.equals("validated_user")){
+			
+				try{	
+					com.neovisionaries.ws.client.WebSocket ws = connect();
+					ws.sendText("speakText:"+speakText);
+				} catch (ArrayIndexOutOfBoundsException ae) {
+					log.info("array 오류가 발생했습니다."+ae);
+				} catch (NullPointerException ne) {
+					log.info("null 오류가 발생했습니다."+ne);
+				} catch (Exception e) {
+					log.info("그 외 오류가 발생했습니다."+e);
+				}
 			}
 			
 			response.setCharacterEncoding("utf-8");
 			
 			PrintWriter print = response.getWriter();
-			print.print(resultStr);
+			print.print(result);
 			print.flush();
-			
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
 			log.debug("MemberWebController입니다.");
-		}
 		
 	}
 	

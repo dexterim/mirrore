@@ -61,7 +61,7 @@ public class MemberWebServiceImpl implements MemberWebService {
 	}
 
 	@Override
-	public void updateMember(HashMap<String, Object> hashMap) throws Exception {
+	public void updateMember(Map<String, Object> hashMap) throws Exception {
 		// TODO Auto-generated method stub
 		memberWebMapper.updateMember(hashMap);
 	}

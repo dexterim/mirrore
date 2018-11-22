@@ -22,6 +22,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 
 import egovframework.example.cmmn.JsonUtil;
 import egovframework.example.memo.service.MemoWebService;
+import egovframework.example.nfcMirrorLogin.web.NfcMirrorLogin;
 import egovframework.example.webSocket.web.WebSocket;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
 
@@ -65,34 +66,29 @@ public class MemoWebController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		
-			String resultStr, member_id;
+			String member_id, mirror_id, result;
 			Map<String,Object> hashMap;
 			hashMap = JsonUtil.JsonToMap(reqParam);
 			
 			System.out.println(hashMap+"\n:메모 정보 입력");
 			member_id = hashMap.get("member_id").toString();
 			
-			try{			
-				com.neovisionaries.ws.client.WebSocket ws = connect();
-				ws.sendText("memo_update: "+member_id);
-				
-			} catch (ArrayIndexOutOfBoundsException ae) {
-				log.info("array 오류가 발생했습니다."+ae);
-			} catch (NullPointerException ne) {
-				log.info("null 오류가 발생했습니다."+ne);
-			} catch (Exception e) {
-				log.info("그 외 오류가 발생했습니다."+e);
-			} finally {
-				memoWebService.insertMemoService(hashMap);
-				
-				resultStr = "success";
+			mirror_id = hashMap.get("mirror_id").toString();
+			
+			NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+			result = nfcLogin.nfcCheck(mirror_id);
+
+			memoWebService.insertMemoService(hashMap);
+			
+			if(result.equals("validated_user")){
+				webSocketMemoUpdate(member_id);
 			}
 			response.setCharacterEncoding("utf-8");
 			
 			PrintWriter print = response.getWriter();
 			
 			//print.write(resultStr);
-			print.print(resultStr);
+			print.print(result);
 			print.flush();
 		
 	}
@@ -100,35 +96,28 @@ public class MemoWebController {
 	public void memoUpdate(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String resultStr, member_id;
+		String member_id, mirror_id, result;
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
 		System.out.println("\n:메모 정보 업데이트");
 		
 		member_id = hashMap.get("member_id").toString();
+		mirror_id = hashMap.get("mirror_id").toString();
 		
-		try{
-			com.neovisionaries.ws.client.WebSocket ws = connect();
-			ws.sendText("memo_update: "+member_id);
-			
-		} catch (ArrayIndexOutOfBoundsException ae) {
-			log.info("array 오류가 발생했습니다."+ae);
-		} catch (NullPointerException ne) {
-			log.info("null 오류가 발생했습니다."+ne);
-		} catch (Exception e) {
-			log.info("그 외 오류가 발생했습니다."+e);
-		} finally {
-			memoWebService.updateMemoService(hashMap);
+		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+		result = nfcLogin.nfcCheck(mirror_id);
 		
-			resultStr = "success";
+		memoWebService.updateMemoService(hashMap);
+		
+		if(result.equals("validated_user")){
+			webSocketMemoUpdate(member_id);
 		}
-		response.setCharacterEncoding("utf-8");
 		
 		PrintWriter print = response.getWriter();
 		
 		//print.write(resultStr);
-		print.print(resultStr);
+		print.print(result);
 		print.flush();
 		
 	}
@@ -136,7 +125,7 @@ public class MemoWebController {
 	public void memoDelete(@RequestBody String reqParam,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String resultStr, member_id;
+		String member_id, mirror_id, result;
 		Map<String,Object> hashMap;
 		hashMap = JsonUtil.JsonToMap(reqParam);
 		
@@ -145,6 +134,25 @@ public class MemoWebController {
 		member_id = hashMap.get("member_id").toString();
 		System.out.println("delete_memo_member_id: "+member_id);
 		
+		mirror_id = hashMap.get("mirror_id").toString();
+		
+		NfcMirrorLogin nfcLogin = new NfcMirrorLogin();
+		result = nfcLogin.nfcCheck(mirror_id);
+		
+		memoWebService.deleteMemoService(hashMap.get("identifier").toString());
+		
+		if(result.equals("validated_user")){
+			webSocketMemoUpdate(member_id);
+		}
+		
+		response.setCharacterEncoding("utf-8");
+		
+		PrintWriter print = response.getWriter();
+		print.print(result);
+		print.flush();
+	}
+	
+	public void webSocketMemoUpdate(String member_id){
 		try{			
 			com.neovisionaries.ws.client.WebSocket ws = connect();
 			ws.sendText("memo_update: "+member_id);
@@ -156,17 +164,8 @@ public class MemoWebController {
 		} catch (Exception e) {
 			log.info("그 외 오류가 발생했습니다."+e);
 		} finally {
-			memoWebService.deleteMemoService(hashMap.get("identifier").toString());
-		
-			resultStr = "success";
+			
 		}
-		response.setCharacterEncoding("utf-8");
-		
-		PrintWriter print = response.getWriter();
-		
-		//print.write(resultStr);
-		print.print(resultStr);
-		print.flush();
 	}
 	private static com.neovisionaries.ws.client.WebSocket connect() throws Exception
     {

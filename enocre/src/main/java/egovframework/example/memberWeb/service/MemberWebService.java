@@ -21,6 +21,6 @@ public interface MemberWebService {
 	String selectMemberLoginServiceList(String id) throws Exception;
 	//setting
 	List<EgovMap> selectSettingServiceList(String id) throws Exception;
-	void updateMember(HashMap<String, Object> hashMap) throws Exception;
+	void updateMember(Map<String, Object> hashMap) throws Exception;
 	
 }
