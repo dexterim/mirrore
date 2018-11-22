@@ -106,6 +106,27 @@ public class EnocreWebController {
 		} else {
 			enocreWebService.updateOffSetting(hashMap);
 		}
+		switch(setting_key) {
+		case "watch":
+			model.addAttribute("tilesWatch", setting_value);
+			break;
+		case "memo":
+			System.out.println("memo on");
+			model.addAttribute("tilesMemo", setting_value);
+			break;
+		case "calendar":
+			System.out.println("calendar on");
+			model.addAttribute("tilesCalendar", setting_value);
+			break;	
+		case "subway":
+			System.out.println("subway on");
+			model.addAttribute("tilesSubway", setting_value);
+			break;
+		case "news":
+			System.out.println("news on");
+			model.addAttribute("tilesNews", setting_value);
+			break;
+		}
 		
 		mirror_id = hashMap.get("mirror_id").toString();
 		System.out.println("update_setting_mirror_id:"+mirror_id);
@@ -129,27 +150,7 @@ public class EnocreWebController {
 			} catch (Exception e) {
 				log.info("그 외 오류가 발생했습니다."+e);
 			} finally {
-				switch(setting_key) {
-				case "watch":
-					model.addAttribute("tilesWatch", setting_value);
-					break;
-				case "memo":
-					System.out.println("memo on");
-					model.addAttribute("tilesMemo", setting_value);
-					break;
-				case "calendar":
-					System.out.println("calendar on");
-					model.addAttribute("tilesCalendar", setting_value);
-					break;	
-				case "subway":
-					System.out.println("subway on");
-					model.addAttribute("tilesSubway", setting_value);
-					break;
-				case "news":
-					System.out.println("news on");
-					model.addAttribute("tilesNews", setting_value);
-					break;
-				}
+				
 			}
 		}
 		response.setCharacterEncoding("utf-8");
