@@ -30,7 +30,7 @@ public class NewsController {
         
         try {
             String text = URLEncoder.encode("오늘의 뉴스", "utf-8"); //앞에 검색어
-            String apiURL = "https://openapi.naver.com/v1/search/news?query=" + text + "&display=" + display + "&sort=date";
+            String apiURL = "https://openapi.naver.com/v1/search/news?query=" + text + "&display=" + display + "&sort="+"date&";
             URL url = new URL(apiURL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
