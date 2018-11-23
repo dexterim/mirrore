@@ -95,8 +95,9 @@
         //output.appendChild(pre);
         if(message.indexOf("java_client") != -1) {
         	setting.enableSetting();
-        } else if(message.indexOf("init_motion") != -1){
-        	alarmGame.init();
+        } else if(message.indexOf("key_motion") != -1){
+        	message_motion = message.slice(0, message.length-11);
+        	$('#alarmGame').html(message_motion);
         } else if(message.indexOf("logout") != -1) {
         	console.log("logout");
         	logout.enableLogoutSetting();
@@ -566,7 +567,8 @@
 	
 	    		for (var i = 0; i<correctMotion.length; i++) {
 	    			correctMotion[i] = alarmGame.randomItem(motions);
-	    			$("#alarmGame").append("<div class='alarmGame'>"+correctMotion[i]+"</div>");
+	    			$("#alarmGame").append("<div class='alarmGame' style='color:#fff'>"+correctMotion[i]+"</div>");
+	    			console.log("정답 :"+correctMotion[i]);
 	    		}
     		},
     		ramdomItem : function(motionText){
@@ -578,7 +580,7 @@
     			 var nowPostion = 0;
     			 var correctMotionArray = $(".alarmGame").val();
     			 var correctMotion = jQuery.makeArray(correctMotionArray);
-    			 console.log('arr'+arr);
+    			 console.log('correctMotion :'+correctMotion);
     			 
     			if (myMotion == correctMotion[nowPosition]) {
     				nowPosition++;// final 변수에 
@@ -589,6 +591,10 @@
     			} else {
     				//모션 재입력 문구 
     				$("#alarmGame").append('삐! 모션이 틀렸습니다! 다시 해보세요<br />');
+    			}
+    			if (nowPosition == 2) {
+    				// 이 함수를 종료하고 모션 전체 성공메세지 띄우기
+    				
     			}
     		}
     }

@@ -93,6 +93,8 @@ public class AlarmWebController {
 			alarmValue = hashMap.get("key_motion").toString();
 			System.out.println("모션 value 텍스트 : " + alarmValue);
 			
+			
+			
 			member_id = hashMap.get("member_id").toString();
 			mirror_id = hashMap.get("mirror_id").toString();
 			System.out.println("mirror_id:"+mirror_id);
