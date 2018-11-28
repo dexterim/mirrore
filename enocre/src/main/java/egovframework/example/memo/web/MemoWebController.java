@@ -221,7 +221,7 @@ public class MemoWebController {
     {
         return new WebSocketFactory()
             .setConnectionTimeout(5000)
-            .createSocket("ws://172.18.81.57:8081/enocre/websocket/echo.do")
+            .createSocket("ws://172.18.79.219:8081/enocre/websocket/echo.do")
             .addListener(new WebSocketAdapter() {
             })
             .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
