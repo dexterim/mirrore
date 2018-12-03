@@ -13,7 +13,7 @@ public class WebSocket {
     {
         return new WebSocketFactory()
             .setConnectionTimeout(5000)
-            .createSocket("ws://172.18.79.219:8081/enocre/websocket/echo.do")
+            .createSocket("ws://172.18.93.154172.18.79.219:8081/enocre/websocket/echo.do")
             .addListener(new WebSocketAdapter() {
                 // A text message arrived from the server.
                 public void onTextMessage(WebSocket websocket, String message) {
